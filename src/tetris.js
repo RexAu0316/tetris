@@ -2,149 +2,138 @@
 window.initGame = (React, assetsUrl) => {
     const { useState, useEffect } = React;
   
+    // Define the tetrimino shapes
+    const tetriminoShapes = [
+      [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], // I-Tetrimino
+      [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], // O-Tetrimino
+      [[0, 0, 1, 0], [0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], // T-Tetrimino
+      [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], // L-Tetrimino
+      [[0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [0, 0, 0, 0]], // J-Tetrimino
+      [[1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0], [0, 0, 0, 0]], // Z-Tetrimino
+      [[0, 0, 1, 0], [0, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]]  // S-Tetrimino
+    ];
+  
     const Tetris = ({ assetsUrl }) => {
       const [score, setScore] = useState(0);
-      const [gameBoard, setGameBoard] = useState(
-        Array(20)
-          .fill()
-          .map(() => Array(10).fill(0))
-      );
-      const [currentPiece, setCurrentPiece] = useState(getRandomPiece());
-      const [currentPosition, setCurrentPosition] = useState({ x: 4, y: 0 });
+      const [grid, setGrid] = useState(Array(20).fill().map(() => Array(10).fill(0)));
+      const [currentTetrimino, setCurrentTetrimino] = useState(null);
+      const [currentPosition, setCurrentPosition] = useState({ x: 3, y: 0 });
+      const [currentRotation, setCurrentRotation] = useState(0);
   
       useEffect(() => {
         const interval = setInterval(() => {
-          updateGameState();
-        }, 500);
+          // Handle tetrimino movement and rotation
+          handleTetriminoMovement();
+        }, 1000);
         return () => clearInterval(interval);
       }, []);
   
-      const getRandomPiece = () => {
-        const pieces = [
-          { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },
-          { shape: [[0, 1, 0], [1, 1, 1]], color: 'orange' },
-          { shape: [[1, 1], [1, 1]], color: 'yellow' },
-          { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' },
-          { shape: [[1, 1, 0], [0, 1, 1]], color: 'purple' },
-          { shape: [[0, 1, 0], [0, 1, 0], [1, 1, 1]], color: 'red' },
-          { shape: [[1, 1, 1, 1]], color: 'cyan' }
-        ];
-        return pieces[Math.floor(Math.random() * pieces.length)];
-      };
-  
-      const updateGameState = () => {
-        // Move the current piece down
-        const newPosition = { ...currentPosition, y: currentPosition.y + 1 };
-        if (isCollision(newPosition)) {
-          // The piece has hit the bottom, freeze it and create a new piece
-          freezePiece();
-          setCurrentPiece(getRandomPiece());
-          setCurrentPosition({ x: 4, y: 0 });
-        } else {
-          setCurrentPosition(newPosition);
-        }
-  
-        // Check for completed rows
-        const newBoard = gameBoard.slice();
-        let rowsCleared = 0;
-        for (let y = 19; y >= 0; y--) {
-          if (newBoard[y].every(cell => cell !== 0)) {
-            newBoard.splice(y, 1);
-            newBoard.unshift(Array(10).fill(0));
-            rowsCleared++;
-          }
-        }
-        setGameBoard(newBoard);
-        setScore(score + rowsCleared * 100);
-      };
-  
-      const isCollision = (position) => {
-        // Check if the current piece collides with the game board or other pieces
-        for (let y = 0; y < currentPiece.shape.length; y++) {
-          for (let x = 0; x < currentPiece.shape[y].length; x++) {
-            if (
-              currentPiece.shape[y][x] !== 0 &&
-              (position.y + y >= 20 ||
-                position.x + x < 0 ||
-                position.x + x >= 10 ||
-                gameBoard[position.y + y][position.x + x] !== 0)
-            ) {
-              return true;
-            }
-          }
-        }
-        return false;
-      };
-  
-      const freezePiece = () => {
-        // Add the current piece to the game board
-        const newBoard = gameBoard.slice();
-        for (let y = 0; y < currentPiece.shape.length; y++) {
-          for (let x = 0; x < currentPiece.shape[y].length; x++) {
-            if (currentPiece.shape[y][x] !== 0) {
-              newBoard[currentPosition.y + y][currentPosition.x + x] =
-                currentPiece.shape[y][x];
-            }
-          }
-        }
-        setGameBoard(newBoard);
-      };
-  
-      const handleKeyPress = (event) => {
-        // Handle user input to move or rotate the current piece
+      const handleKeyDown = (event) => {
         switch (event.key) {
           case 'ArrowLeft':
-            if (!isCollision({ ...currentPosition, x: currentPosition.x - 1 })) {
-              setCurrentPosition({ ...currentPosition, x: currentPosition.x - 1 });
-            }
+            moveTetrimino(-1, 0);
             break;
           case 'ArrowRight':
-            if (!isCollision({ ...currentPosition, x: currentPosition.x + 1 })) {
-              setCurrentPosition({ ...currentPosition, x: currentPosition.x + 1 });
-            }
-            break;
-          case 'ArrowUp':
-            // Rotate the current piece
+            moveTetrimino(1, 0);
             break;
           case 'ArrowDown':
-            updateGameState();
+            moveTetrimino(0, 1);
+            break;
+          case 'ArrowUp':
+            rotateTetrimino();
             break;
         }
+      };
+  
+      const moveTetrimino = (dx, dy) => {
+        // Update the current tetrimino position
+        const newPosition = { x: currentPosition.x + dx, y: currentPosition.y + dy };
+        if (isValidPosition(newPosition)) {
+          setCurrentPosition(newPosition);
+        }
+      };
+  
+      const rotateTetrimino = () => {
+        // Rotate the current tetrimino
+        const newRotation = (currentRotation + 1) % tetriminoShapes[currentTetrimino].length;
+        if (isValidPosition({ x: currentPosition.x, y: currentPosition.y }, newRotation)) {
+          setCurrentRotation(newRotation);
+        }
+      };
+  
+      const handleTetriminoMovement = () => {
+        // Move the current tetrimino down
+        const newPosition = { x: currentPosition.x, y: currentPosition.y + 1 };
+        if (isValidPosition(newPosition)) {
+          setCurrentPosition(newPosition);
+        } else {
+          // Lock the current tetrimino and spawn a new one
+          lockTetrimino();
+          spawnTetrimino();
+        }
+      };
+  
+      const lockTetrimino = () => {
+        // Lock the current tetrimino on the grid
+        const tetriminoGrid = tetriminoShapes[currentTetrimino][currentRotation];
+        const newGrid = [...grid];
+        for (let y = 0; y < 4; y++) {
+          for (let x = 0; x < 4; x++) {
+            if (tetriminoGrid[y][x]) {
+              newGrid[currentPosition.y + y][currentPosition.x + x] = 1;
+            }
+          }
+        }
+        setGrid(newGrid);
+      };
+  
+      const spawnTetrimino = () => {
+        // Spawn a new random tetrimino
+        setCurrentTetrimino(Math.floor(Math.random() * tetriminoShapes.length));
+        setCurrentPosition({ x: 3, y: 0 });
+        setCurrentRotation(0);
+      };
+  
+      const isValidPosition = (position, rotation = currentRotation) => {
+        // Check if the current tetrimino's position is valid
+        const tetriminoGrid = tetriminoShapes[currentTetrimino][rotation];
+        for (let y = 0; y < 4; y++) {
+          for (let x = 0; x < 4; x++) {
+            const gridX = position.x + x;
+            const gridY = position.y + y;
+            if (
+              gridX >= 0 && gridX < 10 &&
+              gridY >= 0 && gridY < 20 &&
+              tetriminoGrid[y][x] && grid[gridY][gridX]
+            ) {
+              return false;
+            }
+          }
+        }
+        return true;
       };
   
       return React.createElement(
         'div',
-        { className: 'tetris', onKeyDown: handleKeyPress, tabIndex: 0 },
-        React.createElement('h2', null, 'Tetris'),
+        { className: "tetris", onKeyDown: handleKeyDown, tabIndex: 0 },
+        React.createElement('h2', null, "Tetris"),
         React.createElement('p', null, `Score: ${score}`),
         React.createElement(
           'div',
-          { className: 'game-board' },
-          gameBoard.map((row, y) =>
+          { className: "game-board" },
+          grid.map((row, y) =>
             React.createElement(
               'div',
-              { key: y, className: 'row' },
+              { key: y, className: "row" },
               row.map((cell, x) =>
-                React.createElement('div', {
-                  key: `${x}-${y}`,
-                  className: `cell ${cell ? 'filled' : ''}`
-                })
-              )
-            )
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'current-piece' },
-          currentPiece.shape.map((row, y) =>
-            React.createElement(
-              'div',
-              { key: y, className: 'row' },
-              row.map((cell, x) =>
-                React.createElement('div', {
-                  key: `${x}-${y}`,
-                  className: `cell ${cell ? 'filled' : ''}`
-                })
+                React.createElement(
+                  'div',
+                  {
+                    key: `${x}-${y}`,
+                    className: `cell ${cell ? 'occupied' : ''}`
+                  },
+                  cell && React.createElement('img', { src: `${assetsUrl}/tetrimino.png`, alt: "Tetrimino" })
+                )
               )
             )
           )
