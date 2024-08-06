@@ -14,23 +14,27 @@ window.initGame = (React, assetsUrl) => {
     [[0, 0, 1, 0], [0, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]]  // S-Tetrimino
   ];
 
-  const Tetris = ({ assetsUrl }) => {
-    const [score, setScore] = useState(0);
-    const [grid, setGrid] = useState(Array(20).fill().map(() => Array(10).fill(0)));
-    const [currentTetrimino, setCurrentTetrimino] = useState(null);
-    const [currentPosition, setCurrentPosition] = useState({ x: 3, y: 0 });
-    const [currentRotation, setCurrentRotation] = useState(0);
+const Tetris = ({ assetsUrl }) => {
+  const [score, setScore] = useState(0);
+  const [grid, setGrid] = useState(
+    Array(20)
+      .fill()
+      .map(() => Array(10).fill(0))
+  );
+  const [currentTetrimino, setCurrentTetrimino] = useState(null);
+  const [currentPosition, setCurrentPosition] = useState({ x: 3, y: 0 });
+  const [currentRotation, setCurrentRotation] = useState(0);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        // Handle tetrimino movement and rotation
-      }, 1000);
-      return () => clearInterval(interval);
-    }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleTetriminoMovement();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [handleTetriminoMovement]);
 
-    const handleKeyDown = (event) => {
-      // Handle key presses for movement and rotation
-    };
+  const handleKeyDown = (event) => {
+    // Handle key presses for movement and rotation
+  };
 
     return React.createElement(
       'div',
