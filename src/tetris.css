@@ -1,58 +1,43 @@
+/* tetris.css */
 .tetris {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #333;
-  color: #fff;
-}
-
-.game-board {
-  border: 1px solid #666;
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(20, 30px);
-  gap: 1px;
-}
-
-.row {
-  display: contents;
-}
-
-.cell {
-  background-color: #555;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cell.occupied {
-  background-color: #888;
-}
-
-.cell.occupied::before {
-  content: "";
-  width: 24px;
-  height: 24px;
-  background: linear-gradient(45deg, #ff0, #0f0, #0ff, #f0f);
-  animation: rotate 5s linear infinite;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    outline: none;
   }
-  100% {
-    transform: rotate(360deg);
+  
+  .game-board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    gap: 1px;
+    background-color: #222;
+    padding: 10px;
   }
-}
-
-h2 {
-  margin-bottom: 10px;
-}
-
-p {
-  margin-bottom: 20px;
-}
+  
+  .cell {
+    width: 20px;
+    height: 20px;
+    background-color: #555;
+  }
+  
+  .cell.filled {
+    background-color: var(--cell-color);
+  }
+  
+  .current-piece {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: 20px;
+  }
+  
+  .current-piece .cell {
+    background-color: var(--piece-color);
+  }
