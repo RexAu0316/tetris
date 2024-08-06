@@ -13,13 +13,17 @@ window.initGame = (React, assetsUrl) => {
     const [currentPosition, setCurrentPosition] = useState({ x: 3, y: 0 });
     const [currentRotation, setCurrentRotation] = useState(0);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        // Handle tetrimino movement and rotation
-        handleTetriminoMovement();
-      }, 1000);
-      return () => clearInterval(interval);
-    }, []);
+useEffect(() => {
+  const interval = setInterval(() => {
+    // Handle tetrimino movement and rotation
+    handleTetriminoMovement();
+  }, 1000);
+
+  // Spawn the initial tetrimino
+  spawnTetrimino();
+
+  return () => clearInterval(interval);
+}, []);
 
     const handleKeyDown = (event) => {
       switch (event.key) {
