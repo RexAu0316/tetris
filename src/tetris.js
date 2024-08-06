@@ -94,24 +94,31 @@ window.initGame = (React, assetsUrl) => {
         setCurrentRotation(0);
       };
   
-      const isValidPosition = (position, rotation = currentRotation) => {
-        // Check if the current tetrimino's position is valid
-        const tetriminoGrid = tetriminoShapes[currentTetrimino][rotation];
-        for (let y = 0; y < 4; y++) {
-          for (let x = 0; x < 4; x++) {
-            const gridX = position.x + x;
-            const gridY = position.y + y;
-            if (
-              gridX >= 0 && gridX < 10 &&
-              gridY >= 0 && gridY < 20 &&
-              tetriminoGrid[y][x] && grid[gridY][gridX]
-            ) {
-              return false;
+      function isValidPosition(tetrimino, gameBoard, x, y) {
+        // Check if the tetrimino and game board data structures are valid
+        if (!tetrimino || !gameBoard) {
+          return false;
+        }
+      
+        // Iterate through the tetrimino shape
+        for (let i = 0; i < tetrimino.length; i++) {
+          for (let j = 0; j < tetrimino[i].length; j++) {
+            // Check if the current cell is occupied by the tetrimino
+            if (tetrimino[i][j]) {
+              // Calculate the target position on the game board
+              const targetX = x + j;
+              const targetY = y + i;
+      
+              // Check if the target position is within the game board boundaries
+              if (targetX < 0 || targetX >= gameBoard[0].length || targetY >= gameBoard.length || gameBoard[targetY][targetX]) {
+                return false;
+              }
             }
           }
         }
+      
         return true;
-      };
+      }
   
       return React.createElement(
         'div',
