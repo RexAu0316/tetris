@@ -1,4 +1,3 @@
-/* tetris.css */
 .tetris {
     font-family: Arial, sans-serif;
     display: flex;
@@ -8,36 +7,40 @@
     height: 100vh;
     background-color: #333;
     color: #fff;
-    outline: none;
   }
   
   .game-board {
+    border: 1px solid #666;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(20, 1fr);
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(20, 30px);
     gap: 1px;
-    background-color: #222;
-    padding: 10px;
+  }
+  
+  .row {
+    display: contents;
   }
   
   .cell {
-    width: 20px;
-    height: 20px;
     background-color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  .cell.filled {
-    background-color: var(--cell-color);
+  .cell.occupied {
+    background-color: #888;
   }
   
-  .current-piece {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 1px;
-    margin-top: 20px;
+  .cell img {
+    width: 24px;
+    height: 24px;
   }
   
-  .current-piece .cell {
-    background-color: var(--piece-color);
+  h2 {
+    margin-bottom: 10px;
+  }
+  
+  p {
+    margin-bottom: 20px;
   }
