@@ -95,30 +95,30 @@ window.initGame = (React, assetsUrl) => {
       };
   
       function isValidPosition(tetrimino, gameBoard, x, y) {
-        // Check if the tetrimino and game board data structures are valid
-        if (!tetrimino || !gameBoard) {
+  // Check if the tetrimino and game board data structures are valid
+  if (!tetrimino || !gameBoard) {
+    return false;
+  }
+
+  // Iterate through the tetrimino shape
+  for (let i = 0; i < tetrimino.length; i++) {
+    for (let j = 0; j < tetrimino[i].length; j++) {
+      // Check if the current cell is occupied by the tetrimino
+      if (tetrimino[i][j]) {
+        // Calculate the target position on the game board
+        const targetX = x + j;
+        const targetY = y + i;
+
+        // Check if the target position is within the game board boundaries
+        if (targetX < 0 || targetX >= gameBoard[0].length || targetY >= gameBoard.length || gameBoard[targetY][targetX]) {
           return false;
         }
-      
-        // Iterate through the tetrimino shape
-        for (let i = 0; i < tetrimino.length; i++) {
-          for (let j = 0; j < tetrimino[i].length; j++) {
-            // Check if the current cell is occupied by the tetrimino
-            if (tetrimino[i][j]) {
-              // Calculate the target position on the game board
-              const targetX = x + j;
-              const targetY = y + i;
-      
-              // Check if the target position is within the game board boundaries
-              if (targetX < 0 || targetX >= gameBoard[0].length || targetY >= gameBoard.length || gameBoard[targetY][targetX]) {
-                return false;
-              }
-            }
-          }
-        }
-      
-        return true;
       }
+    }
+  }
+
+  return true;
+}
   
       return React.createElement(
         'div',
