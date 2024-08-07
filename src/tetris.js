@@ -1,77 +1,70 @@
 window.initGame = (React) => {
-  const { useState, useEffect } = React;
+  const { useState, useEffect, useRef } = React;
 
   const Tetris = () => {
-    const boardHeight = 20;
-    const boardWidth = 10;
+    const BOARD_HEIGHT = 20;
+    const BOARD_WIDTH = 10;
+    const FALL_INTERVAL = 500; // milliseconds
+    const DROP_DELAY = 1000; // milliseconds
+
     const [currentPosition, setCurrentPosition] = useState(0);
     const [isFalling, setIsFalling] = useState(true);
-    const [squareColumn, setSquareColumn] = useState(Math.floor(boardWidth / 2) - 1); // Start in the middle
+    const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
 
     const dropNewSquare = () => {
-      // Check for game over condition
-      if (fixedSquares.some(square => square.row === 0 && square.column === squareColumn)) {
-        alert("Game Over!");
-        resetGame(); // You can implement this function to reset the game state
-        return;
-      }
-      setSquareColumn(Math.floor(boardWidth / 2) - 1); // Reset to middle
+      setSquareColumn(4); // Reset to middle
       setIsFalling(true);
       setCurrentPosition(0);
     };
 
     const handleKeyDown = (event) => {
-      if (isFalling) {
-        switch (event.key) {
-          case "ArrowLeft":
-            if (squareColumn > 0) {
-              setSquareColumn((prev) => prev - 1);
+      if (!isFalling) return;
+
+      const moveSquare = (newColumn) => {
+        setSquareColumn(prev => Math.max(0, Math.min(newColumn, BOARD_WIDTH - 2))); // Ensure within bounds
+      };
+
+      switch (event.key) {
+        case "ArrowLeft":
+          moveSquare(squareColumn - 1);
+          break;
+        case "ArrowRight":
+          moveSquare(squareColumn + 1);
+          break;
+        case "ArrowDown":
+          setCurrentPosition((prev) => {
+            if (prev < BOARD_HEIGHT - 2) {
+              return prev + 1;
+            } else {
+              setFixedSquares(prevFixed => [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ]);
+              setIsFalling(false);
+              return prev;
             }
-            break;
-          case "ArrowRight":
-            if (squareColumn < boardWidth - 2) { // Adjust for 2x2 square
-              setSquareColumn((prev) => prev + 1);
-            }
-            break;
-          case "ArrowDown":
-            setCurrentPosition((prev) => {
-              if (prev < boardHeight - 2) {
-                return prev + 1;
-              } else {
-                setFixedSquares((prevFixed) => [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ]);
-                setIsFalling(false);
-                return prev;
-              }
-            });
-            break;
-          default:
-            break;
-        }
+          });
+          break;
+        case "ArrowUp":
+          // Implement rotation if desired
+          break;
+        default:
+          break;
       }
     };
 
     useEffect(() => {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }, [isFalling, squareColumn]);
-
-    useEffect(() => {
-      const interval = setInterval(() => {
+      const handleInterval = setInterval(() => {
         if (isFalling) {
           setCurrentPosition((prev) => {
-            if (prev < boardHeight - 2) {
+            if (prev < BOARD_HEIGHT - 2) {
               return prev + 1;
             } else {
-              setFixedSquares((prevFixed) => [
+              setFixedSquares(prevFixed => [
                 ...prevFixed,
                 { row: prev, column: squareColumn },
                 { row: prev, column: squareColumn + 1 },
@@ -83,19 +76,23 @@ window.initGame = (React) => {
             }
           });
         }
-      }, 500);
+      }, FALL_INTERVAL);
 
-      return () => clearInterval(interval);
-    }, [isFalling]);
+      return () => clearInterval(handleInterval);
+    }, [isFalling, squareColumn]);
 
     useEffect(() => {
       if (!isFalling) {
-        const timeout = setTimeout(() => {
-          dropNewSquare();
-        }, 1000);
-
+        const timeout = setTimeout(dropNewSquare, DROP_DELAY);
         return () => clearTimeout(timeout);
       }
+    }, [isFalling]);
+
+    useEffect(() => {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
     }, [isFalling]);
 
     return React.createElement(
@@ -105,20 +102,20 @@ window.initGame = (React) => {
       React.createElement(
         'div',
         { className: "game-board" },
-        Array.from({ length: boardHeight }, (_, rowIndex) =>
+        Array.from({ length: BOARD_HEIGHT }, (_, rowIndex) => 
           React.createElement(
             'div',
             { key: rowIndex, className: "row" },
-            Array.from({ length: boardWidth }, (_, colIndex) =>
+            Array.from({ length: BOARD_WIDTH }, (_, colIndex) =>
               React.createElement(
                 'div',
                 {
                   key: colIndex,
                   className: `cell ${
-                    (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
+                    (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
                     (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
                     fixedSquares.some(fixed => fixed.row === rowIndex && fixed.column === colIndex)
-                      ? 'active' : ''
+                    ? 'active' : ''
                   }`,
                 },
                 ''
