@@ -5,8 +5,8 @@
 .game-board {
   display: inline-block;
   position: relative;
-  width: 100px; /* Adjust width as needed */
-  height: 200px; /* Adjust height as needed */
+  width: 120px; /* Increased width */
+  height: 240px; /* Increased height */
   border: 2px solid black;
   background-color: black; /* Background color of game board */
 }
@@ -16,8 +16,8 @@
 }
 
 .cell {
-  width: 10px; /* Width of each cell */
-  height: 10px; /* Height of each cell */
+  width: 12px; /* Increased width of each cell */
+  height: 12px; /* Increased height of each cell */
   border: 1px solid gray; /* Border around each cell */
   background-color: black; /* Color of empty cells */
 }
