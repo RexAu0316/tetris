@@ -31,6 +31,53 @@ window.initGame = (React, assetsUrl) => {
       width: 1,
       height: 1,
     });
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setActivePiece((prevPiece) => {
+          // Check if the piece can move down
+          if (prevPiece.y + prevPiece.height < BOARD_HEIGHT && !isColliding(prevPiece.x, prevPiece.y + 1, prevPiece.width, prevPiece.height, board)) {
+            return {
+              ...prevPiece,
+              y: prevPiece.y + 1,
+            };
+          } else {
+            // Stop the piece and update the board
+            updateBoard(prevPiece.x, prevPiece.y, prevPiece.width, prevPiece.height, board, true);
+            return {
+              x: Math.floor(BOARD_WIDTH / 2),
+              y: 0,
+              width: 1,
+              height: 1,
+            };
+          }
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }, [board]);
+  
+    // Helper function to check if the piece is colliding with the existing blocks
+    const isColliding = (x, y, width, height, board) => {
+      for (let i = y; i < y + height; i++) {
+        for (let j = x; j < x + width; j++) {
+          if (i >= 0 && i < BOARD_HEIGHT && j >= 0 && j < BOARD_WIDTH && board[i][j]) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+  
+    // Helper function to update the board with the new piece
+    const updateBoard = (x, y, width, height, board, isActive) => {
+      const newBoard = [...board];
+      for (let i = y; i < y + height; i++) {
+        for (let j = x; j < x + width; j++) {
+          newBoard[i][j] = isActive;
+        }
+      }
+      setBoard(newBoard);
+    };
 
     useEffect(() => {
       const interval = setInterval(() => {
