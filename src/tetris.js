@@ -19,18 +19,18 @@ window.initGame = (React, assetsUrl) => {
   };
 
   const TetrisGame = ({ assetsUrl }) => {
-    const [board, setBoard] = useState(
-      Array(BOARD_HEIGHT)
-        .fill(0)
-        .map(() => Array(BOARD_WIDTH).fill(false))
-    );
-    const [activePiece, setActivePiece] = useState({
-      x: Math.floor(BOARD_WIDTH / 2),
-      y: 0,
-      width: 1,
-      height: 1,
-    });
-    const [isGameOver, setIsGameOver] = useState(false);
+  const [board, setBoard] = useState(
+    Array.from({ length: BOARD_HEIGHT }, () =>
+      Array.from({ length: BOARD_WIDTH }, () => false)
+    )
+  );
+  const [activePiece, setActivePiece] = useState({
+    x: Math.floor(BOARD_WIDTH / 2),
+    y: 0,
+    width: 1,
+    height: 1,
+  });
+  const [isGameOver, setIsGameOver] = useState(false);
 
     useEffect(() => {
   const interval = setInterval(() => {
