@@ -56,7 +56,6 @@ window.initGame = (React, assetsUrl) => {
       return () => clearInterval(interval);
     }, [board]);
   
-    // Helper function to check if the piece is colliding with the existing blocks
     const isColliding = (x, y, width, height, board) => {
       for (let i = y; i < y + height; i++) {
         for (let j = x; j < x + width; j++) {
@@ -68,14 +67,18 @@ window.initGame = (React, assetsUrl) => {
       return false;
     };
   
-    // Helper function to update the board with the new piece
     const updateBoard = (x, y, width, height, board, isActive) => {
-      const newBoard = [...board];
-      for (let i = y; i < y + height; i++) {
-        for (let j = x; j < x + width; j++) {
-          newBoard[i][j] = isActive;
+      const newBoard = board.map((row, rowIndex) => {
+        if (rowIndex >= y && rowIndex < y + height) {
+          return row.map((_, columnIndex) => {
+            if (columnIndex >= x && columnIndex < x + width) {
+              return isActive;
+            }
+            return row[columnIndex];
+          });
         }
-      }
+        return row;
+      });
       setBoard(newBoard);
     };
 
