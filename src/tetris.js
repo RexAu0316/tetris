@@ -3,7 +3,8 @@ window.initGame = (React) => {
 
   const Tetris = () => {
     const [currentPosition, setCurrentPosition] = useState(0);
-    const [isFalling, setIsFalling] = useState(true);
+    const [isFalling, setIsFalling] = useState(false);
+    const [isPositionSet, setIsPositionSet] = useState(false); // New state
     const boardHeight = 20;
     const boardWidth = 10;
     const [squareColumn, setSquareColumn] = useState(4);
@@ -11,34 +12,37 @@ window.initGame = (React) => {
 
     // Handle keydown events
     const handleKeyDown = (event) => {
-      if (isFalling) {
+      if (!isFalling) { // Allow movement only when the square is not falling
         switch (event.key) {
           case "ArrowLeft":
-            // Move left if not at the left edge
             if (squareColumn > 0) {
               setSquareColumn((prev) => prev - 1);
             }
             break;
           case "ArrowRight":
-            // Move right if not at the right edge
             if (squareColumn < boardWidth - 2) { // Adjust for 2x2 square
               setSquareColumn((prev) => prev + 1);
             }
             break;
+          case "Space": // Confirm the drop position
+            setIsPositionSet(true); // Set position for falling
+            dropNewSquare(); // Start falling
+            break;
+          default:
+            break;
+        }
+      } else if (isFalling) { // Handle falling square movement
+        switch (event.key) {
           case "ArrowDown":
-            // Move down faster if it's falling
             setCurrentPosition((prev) => {
-              if (prev < boardHeight - 2) { // Adjust for 2x2 square
+              if (prev < boardHeight - 2) {
                 return prev + 1;
               } else {
                 return prev; // Prevent moving down if at the bottom
               }
             });
             break;
-          case "ArrowUp":
-            // Optional: Implement rotation or other logic
-            // For now, we'll just ignore it
-            break;
+          // Optional: Handle rotation or other logic with ArrowUp
           default:
             break;
         }
@@ -51,6 +55,13 @@ window.initGame = (React) => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, [isFalling, squareColumn]); // Dependencies to re-attach
+
+    const dropNewSquare = () => {
+      setCurrentPosition(0); // Reset position for the new square
+      setSquareColumn(4); // Reset to starting column in the middle
+      setIsFalling(true); // Start falling again
+      setIsPositionSet(false); // Reset position set state
+    };
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -76,20 +87,6 @@ window.initGame = (React) => {
 
       return () => clearInterval(interval);
     }, [isFalling]);
-
-    const dropNewSquare = () => {
-      setCurrentPosition(0); // Reset position for the new square
-      setSquareColumn(4); // Reset to starting column in the middle
-      // Check if new square overlaps with fixed squares
-      if (fixedSquares.some(fixed => 
-        (fixed.row === 0 && (fixed.column === squareColumn || fixed.column === squareColumn + 1)) ||
-        (fixed.row === 1 && (fixed.column === squareColumn || fixed.column === squareColumn + 1))
-      )) {
-        alert("Game Over!"); // Game over logic if the new square overlaps
-        return;
-      }
-      setIsFalling(true); // Start falling again
-    };
 
     useEffect(() => {
       if (!isFalling) {
