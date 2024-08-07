@@ -9,29 +9,29 @@ window.initGame = (React) => {
     const [currentPosition, setCurrentPosition] = useState({ x: Math.floor(Math.random() * boardWidth), y: 0 });
 
     const dropSquare = () => {
-      setCurrentPosition((prev) => {
-        const newY = prev.y + 1;
-        
-        // Check if the square can move down
-        if (newY < boardHeight && board[newY][prev.x] === 0) {
-          return { x: prev.x, y: newY };
-        } else {
-          // Place the square on the board
-          const newBoard = [...board];
-          newBoard[prev.y][prev.x] = 1; // Mark the square's position
-          setBoard(newBoard);
-          
-          // Check for game over condition
-          if (prev.y === 0) {
-            alert('Game Over!'); // Alert if the square cannot drop
-            return { x: prev.x, y: prev.y }; // Stay in the same place
-          }
+  setCurrentPosition((prev) => {
+    const newY = prev.y + 1;
 
-          // Generate a new square at the top
-          return { x: Math.floor(Math.random() * boardWidth), y: 0 }; 
-        }
-      });
-    };
+    // Check if the square can move down
+    if (newY < boardHeight && board[newY][prev.x] === 0) {
+      return { x: prev.x, y: newY }; // Move down
+    } else {
+      // Place the square on the board
+      const newBoard = [...board];
+      newBoard[prev.y][prev.x] = 1; // Mark the position of the square
+      setBoard(newBoard);
+
+      // Check if the game is over
+      if (prev.y === 0) {
+        alert('Game Over!'); // Alert if the square cannot drop
+        return { x: prev.x, y: prev.y }; // Stay in the same position
+      }
+
+      // Generate a new square at the top
+      return { x: Math.floor(Math.random() * boardWidth), y: 0 }; 
+    }
+  });
+};
 
     useEffect(() => {
       const interval = setInterval(() => {
