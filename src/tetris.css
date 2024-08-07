@@ -1,22 +1,21 @@
-.tetris-game {
-  text-align: center;
-}
-
 .game-board {
-  display: inline-block;
-  border: 2px solid black;
+  display: grid;
+  grid-template-rows: repeat(20, 30px);
+  grid-template-columns: repeat(10, 30px);
 }
 
-.row {
-  display: flex;
-}
-
-.cell {
+.board-cell {
+  border: 1px solid #ccc;
   width: 30px;
   height: 30px;
-  border: 1px solid lightgray;
 }
 
-.cell.active {
-  background-color: blue;
+.filled {
+  background-color: blue; /* Color for the filled square */
+}
+
+.square {
+  width: 100%;
+  height: 100%;
+  background-color: red; /* Color for the falling square */
 }
