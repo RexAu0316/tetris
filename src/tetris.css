@@ -20,11 +20,10 @@
   height: 12px; /* Height of each cell */
   border: 1px solid gray; /* Border around each cell */
   background-color: black; /* Color of empty cells */
-  position: relative; /* Positioning context for the square */
 }
 
 .active {
-  background-color: transparent; /* Make active row transparent */
+  background-color: blue; /* Color of the square piece */
 }
 
 .square {
