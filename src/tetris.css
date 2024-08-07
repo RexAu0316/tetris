@@ -30,13 +30,4 @@
   width: 100%;
   height: 100%;
   background-color: blue; /* Color of the square piece */
-  position: absolute; /* Position the square absolutely */
-  box-sizing: border-box;
-}
-
-/* Adjust the square size to fit 2x2 */
-.cell .square {
-  width: 24px; /* 2 cells wide */
-  height: 24px; /* 2 cells high */
-  position: relative; /* Reset position for the square */
 }
