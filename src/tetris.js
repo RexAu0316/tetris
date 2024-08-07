@@ -79,3 +79,4 @@ return React.createElement(
 };
 
 console.log('Tetris game script loaded');
+}
