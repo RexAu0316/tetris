@@ -18,32 +18,6 @@ window.initGame = (React) => {
       setCurrentPosition(0);
     };
 
-    const clearFullRows = (squares) => {
-      const rowsFilled = Array(BOARD_HEIGHT).fill(0);
-      
-      // Count filled squares per row
-      squares.forEach(({ row }) => {
-        if (row < BOARD_HEIGHT) {
-          rowsFilled[row]++;
-        }
-      });
-
-      // Create a new array without filled rows
-      const newSquares = squares.filter(({ row }) => rowsFilled[row] < BOARD_WIDTH);
-
-      // Shift down the squares above cleared rows
-      for (let row = 0; row < BOARD_HEIGHT; row++) {
-        if (rowsFilled[row] === BOARD_WIDTH) {
-          newSquares.forEach(square => {
-            if (square.row < row) return; // Skip squares below cleared row
-            square.row--; // Shift down
-          });
-        }
-      }
-
-      return newSquares;
-    };
-
     const handleKeyDown = (event) => {
       if (!isFalling) return;
 
@@ -64,16 +38,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-                return clearFullRows(newFixedSquares);
-              });
+              setFixedSquares(prevFixed => [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ]);
               setIsFalling(false);
               return prev;
             }
@@ -95,16 +66,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down automatically
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-                return clearFullRows(newFixedSquares);
-              });
+              setFixedSquares(prevFixed => [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ]);
               setIsFalling(false);
               return prev;
             }
