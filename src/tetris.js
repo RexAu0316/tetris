@@ -2,10 +2,10 @@ window.initGame = (React) => {
   const { useState, useEffect } = React;
 
   const Tetris = () => {
-    const [currentPosition, setCurrentPosition] = useState(0);
-    const [isFalling, setIsFalling] = useState(true);
     const boardHeight = 20;
     const boardWidth = 10;
+    const [currentPosition, setCurrentPosition] = useState(0); // Fixed at 0 for new squares
+    const [isFalling, setIsFalling] = useState(true);
     const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
 
@@ -78,9 +78,7 @@ window.initGame = (React) => {
     }, [isFalling]);
 
     const dropNewSquare = () => {
-      setCurrentPosition(0); // Reset position for the new square
-
-      // Generate a random start column and ensure it fits within the board
+      // Set the square column randomly while ensuring it fits
       let newSquareColumn;
       do {
         newSquareColumn = Math.floor(Math.random() * (boardWidth - 1)); // Random column [0, boardWidth-2]
@@ -91,6 +89,7 @@ window.initGame = (React) => {
 
       setSquareColumn(newSquareColumn); // Set new random starting column
       setIsFalling(true); // Start falling again
+      setCurrentPosition(0); // Set the position to the top of the board
     };
 
     useEffect(() => {
