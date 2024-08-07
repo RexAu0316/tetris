@@ -26,7 +26,7 @@ window.initGame = (React) => {
             }
             break;
           case "ArrowDown":
-            // Move down faster
+            // Move down faster if it's falling
             setCurrentPosition((prev) => {
               if (prev < boardHeight - 2) { // Adjust for 2x2 square
                 return prev + 1;
@@ -68,8 +68,7 @@ window.initGame = (React) => {
                 { row: prev + 1, column: squareColumn + 1 }, // Below right cell
               ]);
               setIsFalling(false); // Stop falling
-              clearInterval(interval);
-              return prev;
+              return prev; // Keep the position the same
             }
           });
         }
