@@ -11,7 +11,7 @@ window.initGame = (React) => {
     const dropSquare = () => {
       setCurrentPosition((prev) => {
         const newY = prev.y + 1;
-        // Check if the square would hit the bottom or another piece
+        // Check if the square would hit the bottom
         if (newY < boardHeight && board[newY][prev.x] === 0) {
           return { x: prev.x, y: newY }; // Continue dropping down
         } else {
