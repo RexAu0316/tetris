@@ -25,12 +25,3 @@
 .active {
   background-color: blue; /* Color of the square piece */
 }
-
-.square {
-  width: 24px; /* 2 cells wide (12px * 2) */
-  height: 24px; /* 2 cells high (12px * 2) */
-  background-color: blue; /* Color of the square piece */
-  position: absolute; /* Positioning for the square */
-  top: 0; /* Align to the top of the cell */
-  left: 0; /* Align to the left of the cell */
-}
