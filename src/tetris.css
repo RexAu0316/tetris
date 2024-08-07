@@ -1,38 +1,35 @@
-/* Game Container */
-#game-container {
+/* tetris.css */
+
+.tetris-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.game-board {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(20, 1fr);
-  width: 300px;
-  height: 600px;
-  border: 1px solid #ccc;
-  margin: 20px auto;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(20, 30px);
+  gap: 1px;
+  background-color: #333;
+  padding: 10px;
 }
 
-/* Game Cells */
-.cell {
-  background-color: #f2f2f2;
-  border: 1px solid #e6e6e6;
+.game-row {
+  display: contents;
 }
 
-/* Active Tetromino Cells */
-.cell.active {
-  background-color: #4CAF50;
+.game-cell {
+  width: 30px;
+  height: 30px;
+  background-color: #666;
 }
 
-/* Tetromino Colors */
-.cell.active:nth-child(4n+1) {
-  background-color: #00bfff;
+.game-cell.filled {
+  background-color: #2980b9;
 }
 
-.cell.active:nth-child(4n+2) {
-  background-color: #ff6347;
-}
-
-.cell.active:nth-child(4n+3) {
-  background-color: #ffa500;
-}
-
-.cell.active:nth-child(4n+4) {
-  background-color: #9370db;
+.game-cell.active {
+  background-color: #e74c3c;
 }
