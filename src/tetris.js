@@ -12,6 +12,21 @@ window.initGame = (React) => {
     const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
 
+    const clearFullRows = () => {
+  // Find rows that are full
+  const rowsCount = Array(BOARD_HEIGHT).fill(0);
+  
+  fixedSquares.forEach(square => {
+    rowsCount[square.row] += 1;
+  });
+
+  // Create a new fixedSquares array removing any filled rows
+  const newFixedSquares = fixedSquares.filter(square => rowsCount[square.row] < BOARD_WIDTH);
+
+  // Update the fixedSquares state with the new array
+  setFixedSquares(newFixedSquares);
+};
+    
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
       setIsFalling(true);
@@ -58,37 +73,41 @@ window.initGame = (React) => {
       }
     };
 
-    useEffect(() => {
-      const handleInterval = setInterval(() => {
-        if (isFalling) {
-          setCurrentPosition(prev => {
-            if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1; // Move down automatically
-            } else {
-              // Square has landed
-              setFixedSquares(prevFixed => [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ]);
-              setIsFalling(false);
-              return prev;
-            }
-          });
+  useEffect(() => {
+  const handleInterval = setInterval(() => {
+    if (isFalling) {
+      setCurrentPosition(prev => {
+        if (prev < BOARD_HEIGHT - 2) {
+          return prev + 1; // Move down automatically
+        } else {
+          // Square has landed
+          setFixedSquares(prevFixed => [
+            ...prevFixed,
+            { row: prev, column: squareColumn },
+            { row: prev, column: squareColumn + 1 },
+            { row: prev + 1, column: squareColumn },
+            { row: prev + 1, column: squareColumn + 1 },
+          ]);
+          setIsFalling(false);
+          clearFullRows(); // Check for full rows
+          return prev;
         }
-      }, FALL_INTERVAL);
+      });
+    }
+  }, FALL_INTERVAL);
 
-      return () => clearInterval(handleInterval);
-    }, [isFalling, squareColumn]);
+  return () => clearInterval(handleInterval);
+}, [isFalling, squareColumn]);
 
-    useEffect(() => {
-      if (!isFalling) {
-        const timeout = setTimeout(dropNewSquare, DROP_DELAY);
-        return () => clearTimeout(timeout);
-      }
-    }, [isFalling]);
+useEffect(() => {
+  if (!isFalling) {
+    const timeout = setTimeout(() => {
+      dropNewSquare();
+      clearFullRows(); // Check for full rows after dropping a new square
+    }, DROP_DELAY);
+    return () => clearTimeout(timeout);
+  }
+}, [isFalling]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
