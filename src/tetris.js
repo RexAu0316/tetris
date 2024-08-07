@@ -1,27 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
 
-  const clearFullRows = (squares) => {
-    const rowsToClear = new Set();
-
-    // Identify which rows are full
-    squares.forEach(square => {
-      rowsToClear.add(square.row);
-    });
-
-    // If there are rows to clear, we will filter them out
-    const clearedSquares = squares.filter(square => !rowsToClear.has(square.row));
-
-    // Now we need to update the rows above the cleared rows
-    const newSquares = clearedSquares.map(square => {
-      const rowsAbove = Array.from(rowsToClear).filter(row => row < square.row);
-      const shiftAmount = rowsAbove.length;
-      return { row: square.row - shiftAmount, column: square.column };
-    });
-
-    return newSquares;
-  };
-
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
@@ -37,6 +16,41 @@ window.initGame = (React) => {
       setSquareColumn(4); // Reset to middle
       setIsFalling(true);
       setCurrentPosition(0);
+    };
+
+    const handleSquareLand = (prev, squareColumn) => {
+      const newFixedSquares = [
+        { row: prev, column: squareColumn },
+        { row: prev, column: squareColumn + 1 },
+        { row: prev + 1, column: squareColumn },
+        { row: prev + 1, column: squareColumn + 1 },
+      ];
+      
+      const updatedFixedSquares = [...fixedSquares, ...newFixedSquares];
+      
+      // Logic to clear full columns
+      const columnsToClear = [];
+      for (let col = 0; col < BOARD_WIDTH; col++) {
+        const filledRows = updatedFixedSquares.filter(sq => sq.column === col).map(sq => sq.row);
+        if (filledRows.length === BOARD_HEIGHT) {
+          columnsToClear.push(col);
+        }
+      }
+
+      // Remove filled columns and adjust remaining squares
+      let clearedSquares = updatedFixedSquares.filter(square => !columnsToClear.includes(square.column));
+      
+      // Shift down squares in columns above cleared columns
+      columnsToClear.forEach(col => {
+        clearedSquares = clearedSquares.map(square => {
+          if (square.column > col) {
+            return { row: square.row, column: square.column - 1 }; // Shift left
+          }
+          return square;
+        });
+      });
+
+      setFixedSquares(clearedSquares);
     };
 
     const handleKeyDown = (event) => {
@@ -59,18 +73,7 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-
-                // Clear full rows and return updated squares
-                return clearFullRows(newFixedSquares);
-              });
+              handleSquareLand(prev, squareColumn);
               setIsFalling(false);
               return prev;
             }
@@ -92,18 +95,7 @@ window.initGame = (React) => {
               return prev + 1; // Move down automatically
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-
-                // Clear full rows and return updated squares
-                return clearFullRows(newFixedSquares);
-              });
+              handleSquareLand(prev, squareColumn);
               setIsFalling(false);
               return prev;
             }
