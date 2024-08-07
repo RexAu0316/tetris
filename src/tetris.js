@@ -90,11 +90,12 @@ useEffect(() => {
 
 const dropNewSquare = () => {
   setCurrentPosition(0); // Reset position for the new square
-  setSquareColumn(4); // Reset to starting column in the middle
+  const middleColumn = Math.floor((boardWidth - 2) / 2); // Middle column calculation
+  setSquareColumn(middleColumn); // Set starting column to the middle
   // Check if new square overlaps with fixed squares
   if (fixedSquares.some(fixed => 
-    (fixed.row === 0 && (fixed.column === squareColumn || fixed.column === squareColumn + 1)) ||
-    (fixed.row === 1 && (fixed.column === squareColumn || fixed.column === squareColumn + 1))
+    (fixed.row === 0 && (fixed.column === middleColumn || fixed.column === middleColumn + 1)) ||
+    (fixed.row === 1 && (fixed.column === middleColumn || fixed.column === middleColumn + 1))
   )) {
     alert("Game Over!"); // Game over logic if the new square overlaps
     return;
@@ -102,10 +103,11 @@ const dropNewSquare = () => {
   setIsFalling(true); // Start falling again
 };
 
+// Call dropNewSquare when the current square stops falling
 useEffect(() => {
   if (!isFalling) {
     const timeout = setTimeout(() => {
-      dropNewSquare(); // Drop a new square after the current one stops
+      dropNewSquare(); // This will now drop from the middle column
     }, 1000);
 
     return () => clearTimeout(timeout);
