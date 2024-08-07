@@ -1,6 +1,27 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
 
+  const clearFullRows = (squares) => {
+    const rowsToClear = new Set();
+
+    // Identify which rows are full
+    squares.forEach(square => {
+      rowsToClear.add(square.row);
+    });
+
+    // If there are rows to clear, we will filter them out
+    const clearedSquares = squares.filter(square => !rowsToClear.has(square.row));
+
+    // Now we need to update the rows above the cleared rows
+    const newSquares = clearedSquares.map(square => {
+      const rowsAbove = Array.from(rowsToClear).filter(row => row < square.row);
+      const shiftAmount = rowsAbove.length;
+      return { row: square.row - shiftAmount, column: square.column };
+    });
+
+    return newSquares;
+  };
+
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
@@ -38,13 +59,18 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ]);
+              setFixedSquares(prevFixed => {
+                const newFixedSquares = [
+                  ...prevFixed,
+                  { row: prev, column: squareColumn },
+                  { row: prev, column: squareColumn + 1 },
+                  { row: prev + 1, column: squareColumn },
+                  { row: prev + 1, column: squareColumn + 1 },
+                ];
+
+                // Clear full rows and return updated squares
+                return clearFullRows(newFixedSquares);
+              });
               setIsFalling(false);
               return prev;
             }
@@ -66,13 +92,18 @@ window.initGame = (React) => {
               return prev + 1; // Move down automatically
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ]);
+              setFixedSquares(prevFixed => {
+                const newFixedSquares = [
+                  ...prevFixed,
+                  { row: prev, column: squareColumn },
+                  { row: prev, column: squareColumn + 1 },
+                  { row: prev + 1, column: squareColumn },
+                  { row: prev + 1, column: squareColumn + 1 },
+                ];
+
+                // Clear full rows and return updated squares
+                return clearFullRows(newFixedSquares);
+              });
               setIsFalling(false);
               return prev;
             }
