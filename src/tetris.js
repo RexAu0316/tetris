@@ -90,19 +90,18 @@ useEffect(() => {
 
 const dropNewSquare = () => {
   setCurrentPosition(0); // Reset position for the new square
-  const middleColumn = Math.floor((boardWidth - 2) / 2); // Middle column calculation
-  setSquareColumn(middleColumn); // Set starting column to the middle
+  const randomColumn = Math.floor(Math.random() * (boardWidth - 1)); // Random column
+  setSquareColumn(randomColumn); // Set random starting column
   // Check if new square overlaps with fixed squares
   if (fixedSquares.some(fixed => 
-    (fixed.row === 0 && (fixed.column === middleColumn || fixed.column === middleColumn + 1)) ||
-    (fixed.row === 1 && (fixed.column === middleColumn || fixed.column === middleColumn + 1))
+    (fixed.row === 0 && (fixed.column === randomColumn || fixed.column === randomColumn + 1)) ||
+    (fixed.row === 1 && (fixed.column === randomColumn || fixed.column === randomColumn + 1))
   )) {
     alert("Game Over!"); // Game over logic if the new square overlaps
     return;
   }
   setIsFalling(true); // Start falling again
 };
-
 // Call dropNewSquare when the current square stops falling
 useEffect(() => {
   if (!isFalling) {
