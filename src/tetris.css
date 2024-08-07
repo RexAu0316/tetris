@@ -1,7 +1,24 @@
+html, body {
+  height: 100%; /* Ensure the body takes up the full height */
+  margin: 0;    /* Remove default margin */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  background-color: #f0f0f0; /* Optional: Set a background color */
+}
+
+.tetris {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center elements horizontally */
+}
+
 .game-board {
   display: grid;
   grid-template-rows: repeat(20, 30px);
   grid-template-columns: repeat(10, 30px);
+  gap: 1px; /* Optional: Space between cells */
+  background-color: #333; /* Optional: Background color for the board */
 }
 
 .board-cell {
