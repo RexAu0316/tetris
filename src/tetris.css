@@ -5,18 +5,25 @@
 .game-board {
   display: inline-block;
   position: relative;
-  width: 100px;
-  height: 200px;
+  width: 100px; /* Adjust width as needed */
+  height: 200px; /* Adjust height as needed */
   border: 2px solid black;
-  overflow: hidden;
+  background-color: black; /* Background color of game board */
 }
 
 .row {
-  height: 10px; /* Each row height */
+  display: flex; /* Use flexbox to align cells in a row */
+}
+
+.cell {
+  width: 10px; /* Width of each cell */
+  height: 10px; /* Height of each cell */
+  border: 1px solid gray; /* Border around each cell */
+  background-color: black; /* Color of empty cells */
 }
 
 .active {
-  background-color: lightblue; /* Color of the active square */
+  background-color: transparent; /* Make active row transparent */
 }
 
 .square {
