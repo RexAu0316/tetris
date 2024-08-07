@@ -1,48 +1,89 @@
-window.initTetrisGame = (React) => {
-  const { useState, useEffect } = React;
+// tetris.js
+window.initGame = (React) => {
+  const { useState, useEffect, useCallback } = React;
 
   const TetrisGame = () => {
-    const [board, setBoard] = useState(Array(20).fill(Array(10).fill(0)));
-    const [position, setPosition] = useState({ x: 4, y: 0 });
-    const [intervalId, setIntervalId] = useState(null);
+    const [position, setPosition] = useState({ x: 4, y: 0 }); // Start in the middle at the top
+    const [isGameOver, setIsGameOver] = useState(false);
 
-    const moveDown = () => {
-      setPosition((pos) => {
-        if (pos.y < 19 && board[pos.y + 1][pos.x] === 0) {
-          return { ...pos, y: pos.y + 1 };
-        }
-        clearInterval(intervalId);
-        return pos;
-      });
-    };
+    const boardWidth = 10;
+    const boardHeight = 20;
 
     useEffect(() => {
-      const id = setInterval(moveDown, 500);
-      setIntervalId(id);
-      return () => clearInterval(id);
-    }, []);
+      const handleKeyDown = (event) => {
+        if (isGameOver) return;
+        switch (event.key) {
+          case 'ArrowLeft':
+            if (position.x > 0) {
+              setPosition((prev) => ({ ...prev, x: prev.x - 1 }));
+            }
+            break;
+          case 'ArrowRight':
+            if (position.x < boardWidth - 1) {
+              setPosition((prev) => ({ ...prev, x: prev.x + 1 }));
+            }
+            break;
+          case 'ArrowDown':
+            if (position.y < boardHeight - 1) {
+              setPosition((prev) => ({ ...prev, y: prev.y + 1 }));
+            }
+            break;
+          case 'ArrowUp':
+            // Up arrow doesn't do anything in this simplified version
+            break;
+          default:
+            break;
+        }
+      };
 
-    const renderBoard = () => {
-      return board.map((row, y) =>
-        row.map((cell, x) => {
-          const isSquare = position.x === x && position.y === y;
-          return React.createElement('div', {
-            key: `${x}-${y}`,
-            className: `cell ${isSquare ? 'square' : ''}`,
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [position, isGameOver]);
+
+    useEffect(() => {
+      const dropInterval = setInterval(() => {
+        if (!isGameOver) {
+          setPosition((prev) => {
+            if (prev.y < boardHeight - 1) {
+              return { ...prev, y: prev.y + 1 };
+            } else {
+              setIsGameOver(true);
+              clearInterval(dropInterval);
+              return prev;
+            }
           });
-        })
-      );
-    };
+        }
+      }, 1000); // Drop every second
+
+      return () => clearInterval(dropInterval);
+    }, [isGameOver]);
 
     return React.createElement(
       'div',
-      { className: "tetris-game" },
-      React.createElement('h2', null, "Tetris Game"),
-      React.createElement('div', { className: "game-board" }, renderBoard())
+      { className: 'tetris-game' },
+      React.createElement('h2', null, 'Simplified Tetris'),
+      React.createElement('div', { className: 'game-board' },
+        Array.from({ length: boardHeight }).map((_, rowIndex) => (
+          React.createElement('div', {
+            key: rowIndex,
+            className: 'row',
+          },
+            Array.from({ length: boardWidth }).map((_, colIndex) => (
+              React.createElement('div', {
+                key: colIndex,
+                className: `cell ${position.x === colIndex && position.y === rowIndex ? 'active' : ''}`
+              })
+            ))
+          ))
+        ))
+      ),
+      isGameOver && React.createElement('h3', null, 'Game Over!')
     );
   };
 
   return () => React.createElement(TetrisGame);
 };
 
-console.log('Tetris game script loaded');
+console.log('Simplified Tetris game script loaded');
