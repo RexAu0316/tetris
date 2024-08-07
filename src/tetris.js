@@ -18,29 +18,6 @@ window.initGame = (React) => {
       setCurrentPosition(0);
     };
 
-    const clearFullRows = (squares) => {
-      const rows = Array.from({ length: BOARD_HEIGHT }, () => []);
-      squares.forEach(square => {
-        rows[square.row].push(square);
-      });
-
-      const clearedSquares = [];
-      const clearedRows = [];
-
-      rows.forEach((rowSquares, rowIndex) => {
-        if (rowSquares.length === BOARD_WIDTH) {
-          clearedRows.push(rowIndex); // Row is full
-        } else {
-          clearedSquares.push(...rowSquares.map(square => ({
-            row: square.row - clearedRows.length, // Adjust row position
-            column: square.column
-          })));
-        }
-      });
-
-      setFixedSquares(clearedSquares);
-    };
-
     const handleKeyDown = (event) => {
       if (!isFalling) return;
 
@@ -108,11 +85,10 @@ window.initGame = (React) => {
 
     useEffect(() => {
       if (!isFalling) {
-        clearFullRows(fixedSquares);
         const timeout = setTimeout(dropNewSquare, DROP_DELAY);
         return () => clearTimeout(timeout);
       }
-    }, [isFalling, fixedSquares]);
+    }, [isFalling]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
