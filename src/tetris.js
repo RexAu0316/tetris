@@ -13,23 +13,22 @@ window.initGame = (React) => {
     const [gameOver, setGameOver] = useState(false); // Game over state
 
     useEffect(() => {
-      const interval = setInterval(() => {
-        if (isFalling && !gameOver) {
-          setCurrentPosition((prev) => {
-            // Stop the square when it reaches the bottom or collides with filled cells
-            if (prev < boardHeight - 2 && !board[prev + 2][squareColumn] && !board[prev + 2][squareColumn + 1]) {
-              return prev + 1;
-            } else {
-              handleSquareStop(prev); // Handle the square stopping
-              clearInterval(interval);
-              return prev; // Don't change position if it is at the bottom
-            }
-          });
+  const interval = setInterval(() => {
+    if (isFalling && !gameOver) {
+      setCurrentPosition((prev) => {
+        // Check if the next position is within bounds and not filled
+        if (prev < boardHeight - 2 && !board[prev + 2][squareColumn] && !board[prev + 2][squareColumn + 1]) {
+          return prev + 1; // Move down
+        } else {
+          handleSquareStop(prev); // Handle the square stopping
+          return prev; // Don't change position if it is at the bottom
         }
-      }, 500); // Adjust speed of falling
+      });
+    }
+  }, 500); // Adjust speed of falling
 
-      return () => clearInterval(interval);
-    }, [isFalling, gameOver]);
+  return () => clearInterval(interval);
+}, [isFalling, gameOver]);
 
     const handleSquareStop = (prevPosition) => {
       // Mark the square's position on the board
