@@ -2,7 +2,7 @@ window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
   const BOARD_WIDTH = 10;
-  const BOARD_HEIGHT = 20;
+  const BOARD_HEIGHT = 10;
 
   const TetrisBlock = ({ x, y, isActive, isFixed }) => {
     return React.createElement(
