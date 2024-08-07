@@ -5,7 +5,7 @@ window.initGame = (React) => {
 
   const Tetris = () => {
     const [position, setPosition] = useState(0);
-    const boardHeight = 20; // Height of the game board
+    const boardHeight = 15; // Height of the game board
     const boardWidth = 10; // Width of the game board
 
     useEffect(() => {
