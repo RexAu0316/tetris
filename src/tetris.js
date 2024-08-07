@@ -11,41 +11,11 @@ window.initGame = (React) => {
     const [isFalling, setIsFalling] = useState(true);
     const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
-    const [score, setScore] = useState(0); // New score state
 
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
       setIsFalling(true);
       setCurrentPosition(0);
-    };
-
-    const checkForFullRows = () => {
-      const rowsToClear = [];
-      // Create an array to count filled cells in each row
-      for (let row = 0; row < BOARD_HEIGHT; row++) {
-        let isFull = true;
-        for (let col = 0; col < BOARD_WIDTH; col++) {
-          if (!fixedSquares.some(fixed => fixed.row === row && fixed.column === col)) {
-            isFull = false;
-            break;
-          }
-        }
-        if (isFull) rowsToClear.push(row);
-      }
-      return rowsToClear;
-    };
-
-    const removeFullRows = (rowsToClear) => {
-      // Update score based on number of cleared rows
-      setScore(prevScore => prevScore + rowsToClear.length);
-      // Remove full rows from fixed squares
-      setFixedSquares(prevFixed => {
-        return prevFixed.filter(fixed => !rowsToClear.includes(fixed.row))
-          .map(fixed => ({
-            ...fixed,
-            row: fixed.row > Math.max(...rowsToClear) ? fixed.row - rowsToClear.length : fixed.row // Shift down
-          }));
-      });
     };
 
     const handleKeyDown = (event) => {
@@ -76,11 +46,6 @@ window.initGame = (React) => {
                 { row: prev + 1, column: squareColumn + 1 },
               ]);
               setIsFalling(false);
-              // Check for full rows
-              const fullRows = checkForFullRows();
-              if (fullRows.length > 0) {
-                removeFullRows(fullRows);
-              }
               return prev;
             }
           });
@@ -109,11 +74,6 @@ window.initGame = (React) => {
                 { row: prev + 1, column: squareColumn + 1 },
               ]);
               setIsFalling(false);
-              // Check for full rows
-              const fullRows = checkForFullRows();
-              if (fullRows.length > 0) {
-                removeFullRows(fullRows);
-              }
               return prev;
             }
           });
@@ -141,7 +101,6 @@ window.initGame = (React) => {
       'div',
       { className: "tetris" },
       React.createElement('h2', null, "Simplified Tetris"),
-      React.createElement('div', null, `Score: ${score}`), // Display score
       React.createElement(
         'div',
         { className: "game-board" },
