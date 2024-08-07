@@ -1,126 +1,83 @@
-window.initGame = (React, assetsUrl) => {
-  const { useState, useEffect } = React;
+// Create the game container
+const gameContainer = document.createElement('div');
+gameContainer.id = 'game-container';
+document.body.appendChild(gameContainer);
 
-  const BOARD_WIDTH = 10;
-  const BOARD_HEIGHT = 20;
+// Define the game board dimensions
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 20;
 
-  const TetrisBlock = ({ x, y, isActive, color }) => {
-    return React.createElement(
-      'div',
-      {
-        className: `tetris-block block-color-${color} ${isActive ? 'active' : ''}`,
-        style: {
-          gridColumnStart: x + 1,
-          gridRowStart: y + 1,
-        },
-      },
-      null
-    );
-  };
+// Create the game board
+function drawGameBoard() {
+  for (let y = 0; y < BOARD_HEIGHT; y++) {
+    for (let x = 0; x < BOARD_WIDTH; x++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.gridColumn = `${x + 1}`;
+      cell.style.gridRow = `${y + 1}`;
+      gameContainer.appendChild(cell);
+    }
+  }
+}
 
-  const TetrisGame = ({ assetsUrl }) => {
-    const [board, setBoard] = useState(
-      Array(BOARD_HEIGHT)
-        .fill(0)
-        .map(() => Array(BOARD_WIDTH).fill(false))
-    );
-    const [activePiece, setActivePiece] = useState({
-      x: Math.floor(BOARD_WIDTH / 2),
-      y: 0,
-      width: 2,
-      height: 2,
-      color: 1,
-    });
+drawGameBoard();
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setActivePiece((prevPiece) => {
-          // Check if the piece can move down
-          if (prevPiece.y + prevPiece.height < BOARD_HEIGHT && !isColliding(prevPiece.x, prevPiece.y + 1, prevPiece.width, prevPiece.height, board)) {
-            return {
-              ...prevPiece,
-              y: prevPiece.y + 1,
-            };
-          } else {
-            // Stop the piece and update the board
-            updateBoard(prevPiece.x, prevPiece.y, prevPiece.width, prevPiece.height, prevPiece.color, board, true);
-            // Generate a new piece
-            return {
-              x: Math.floor(BOARD_WIDTH / 2),
-              y: 0,
-              width: 2,
-              height: 2,
-              color: Math.floor(Math.random() * 7) + 1,
-            };
-          }
-        });
-      }, 500);
-      return () => clearInterval(interval);
-    }, [board]);
+// Define the Tetromino shapes
+const tetrominos = [
+  // I-shaped Tetromino
+  [
+    [0, 0], [0, 1], [0, 2], [0, 3]
+  ],
+  // J-shaped Tetromino
+  [
+    [0, 0], [0, 1], [0, 2], [1, 2]
+  ],
+  // L-shaped Tetromino
+  [
+    [0, 0], [0, 1], [0, 2], [-1, 2]
+  ],
+  // O-shaped Tetromino
+  [
+    [0, 0], [0, 1], [1, 0], [1, 1]
+  ],
+  // S-shaped Tetromino
+  [
+    [0, 0], [0, 1], [1, 1], [1, 2]
+  ],
+  // T-shaped Tetromino
+  [
+    [0, 0], [0, 1], [0, 2], [1, 1]
+  ],
+  // Z-shaped Tetromino
+  [
+    [0, 0], [0, 1], [-1, 1], [-1, 2]
+  ]
+];
 
-    // Helper function to check if the piece is colliding with the existing blocks
-    const isColliding = (x, y, width, height, board) => {
-      for (let i = y; i < y + height; i++) {
-        for (let j = x; j < x + width; j++) {
-          if (i >= 0 && i < BOARD_HEIGHT && j >= 0 && j < BOARD_WIDTH && board[i][j]) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
+// Draw a Tetromino on the game board
+function drawTetromino(tetromino, x, y) {
+  tetromino.forEach(([dx, dy]) => {
+    const cell = gameContainer.children[y * BOARD_WIDTH + x + dx];
+    if (cell) {
+      cell.classList.add('active');
+    }
+  });
+}
 
-    // Helper function to update the board with the new piece
-    const updateBoard = (x, y, width, height, color, board, isActive) => {
-      const newBoard = [...board];
-      for (let i = y; i < y + height; i++) {
-        for (let j = x; j < x + width; j++) {
-          newBoard[i][j] = isActive ? color : false;
-        }
-      }
-      setBoard(newBoard);
-    };
+// Game loop
+function gameLoop() {
+  // Move the Tetromino down
+  // Rotate the Tetromino
+  // Check for completed lines and clear them
+  // Spawn a new Tetromino
+  // Update the game board
 
-    useEffect(() => {
-      const newBoard = board.map((row, y) =>
-        row.map((_, x) => {
-          if (
-            x >= activePiece.x &&
-            x < activePiece.x + activePiece.width &&
-            y >= activePiece.y &&
-            y < activePiece.y + activePiece.height
-          ) {
-            return activePiece.color;
-          }
-          return false;
-        })
-      );
-      setBoard(newBoard);
-    }, [activePiece]);
+  requestAnimationFrame(gameLoop);
+}
 
-    return React.createElement(
-      'div',
-      { className: 'tetris-game' },
-      React.createElement('h2', null, 'Tetris'),
-      React.createElement(
-        'div',
-        { className: 'game-board' },
-        board.map((row, y) =>
-          row.map((color, x) =>
-            React.createElement(TetrisBlock, {
-              key: `${x}-${y}`,
-              x,
-              y,
-              isActive: color !== false,
-              color: color || 0,
-            })
-          )
-        )
-      )
-    );
-  };
+gameLoop();
 
-  return () => React.createElement(TetrisGame, { assetsUrl: assetsUrl });
-};
-
-console.log('Tetris game script loaded');
+// Handle user input
+document.addEventListener('keydown', (event) => {
+  // Handle left, right, down, and rotate key presses
+});
