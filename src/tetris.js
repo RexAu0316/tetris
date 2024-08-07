@@ -55,24 +55,28 @@ window.initGame = (React) => {
       setIsFalling(true); // Start falling again
     };
 
-    const renderBoard = () => {
-      return Array.from({ length: boardHeight }, (_, rowIndex) =>
+   const renderBoard = () => {
+  return Array.from({ length: boardHeight }, (_, rowIndex) =>
+    React.createElement(
+      'div',
+      { key: rowIndex, className: "row" },
+      Array.from({ length: boardWidth }, (_, colIndex) =>
         React.createElement(
           'div',
-          { key: rowIndex, className: "row" },
-          Array.from({ length: boardWidth }, (_, colIndex) =>
-            React.createElement(
-              'div',
-              {
-                key: colIndex,
-                className: `cell ${board[rowIndex][colIndex] === 1 ? 'active' : ''}`,
-              },
-              ''
-            )
-          )
+          {
+            key: colIndex,
+            className: `cell ${
+              (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
+              (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) 
+                ? 'active' : ''
+            }`,
+          },
+          ''
         )
-      );
-    };
+      )
+    )
+  );
+};
 
     return React.createElement(
       'div',
