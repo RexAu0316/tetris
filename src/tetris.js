@@ -36,18 +36,21 @@ const Tetris = () => {
   }, [isFalling]);
 
   const dropNewSquare = () => {
-    setCurrentPosition(0); // Reset position for the new square
-    setSquareColumn(4); // Reset to starting column in the middle
-    // Check if new square overlaps with fixed squares
-    if (fixedSquares.some(fixed => 
-      (fixed.row === 0 && (fixed.column === squareColumn || fixed.column === squareColumn + 1)) ||
-      (fixed.row === 1 && (fixed.column === squareColumn || fixed.column === squareColumn + 1))
-    )) {
-      alert("Game Over!"); // Game over logic if the new square overlaps
-      return;
-    }
-    setIsFalling(true); // Start falling again
-  };
+  setCurrentPosition(0); // Reset position for the new square
+  // Generate a random starting column
+  const randomColumn = Math.floor(Math.random() * (boardWidth - 1));
+  setSquareColumn(randomColumn); // Set random starting column
+  
+  // Check if new square overlaps with fixed squares
+  if (fixedSquares.some(fixed => 
+    (fixed.row === 0 && (fixed.column === randomColumn || fixed.column === randomColumn + 1)) ||
+    (fixed.row === 1 && (fixed.column === randomColumn || fixed.column === randomColumn + 1))
+  )) {
+    alert("Game Over!"); // Game over logic if the new square overlaps
+    return;
+  }
+  setIsFalling(true); // Start falling again
+};
 
   useEffect(() => {
     if (!isFalling) {
