@@ -1,86 +1,89 @@
-// Create the game container
-const gameContainer = document.createElement('div');
-gameContainer.id = 'game-container';
-document.body.appendChild(gameContainer);
+// tetris.js
 
-// Define the game board dimensions
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
+window.initTetrisGame = (React, assetsUrl) => {
+  const { useState, useEffect } = React;
 
-// Get the game container element
-const gameContainer = document.getElementById('game-container');
+  const TetrisGame = ({ assetsUrl }) => {
+    const [gameBoard, setGameBoard] = useState(Array(20).fill().map(() => Array(10).fill(false)));
+    const [currentPiece, setCurrentPiece] = useState({
+      shape: [[true]],
+      position: { x: 4, y: 0 }
+    });
+    const [score, setScore] = useState(0);
 
-// Create the game board
-function drawGameBoard() {
-  for (let y = 0; y < BOARD_HEIGHT; y++) {
-    for (let x = 0; x < BOARD_WIDTH; x++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.style.gridColumn = `${x + 1}`;
-      cell.style.gridRow = `${y + 1}`;
-      gameContainer.appendChild(cell);
-    }
-  }
-}
+    useEffect(() => {
+      const interval = setInterval(() => {
+        moveDown();
+      }, 500);
+      return () => clearInterval(interval);
+    }, []);
 
-drawGameBoard();
+    const moveDown = () => {
+      if (canMove(currentPiece.position.x, currentPiece.position.y + 1, currentPiece.shape)) {
+        setCurrentPiece({
+          ...currentPiece,
+          position: { x: currentPiece.position.x, y: currentPiece.position.y + 1 }
+        });
+      } else {
+        placePiece();
+        setCurrentPiece({
+          shape: [[true]],
+          position: { x: 4, y: 0 }
+        });
+      }
+    };
 
-// Define the Tetromino shapes
-const tetrominos = [
-  // I-shaped Tetromino
-  [
-    [0, 0], [0, 1], [0, 2], [0, 3]
-  ],
-  // J-shaped Tetromino
-  [
-    [0, 0], [0, 1], [0, 2], [1, 2]
-  ],
-  // L-shaped Tetromino
-  [
-    [0, 0], [0, 1], [0, 2], [-1, 2]
-  ],
-  // O-shaped Tetromino
-  [
-    [0, 0], [0, 1], [1, 0], [1, 1]
-  ],
-  // S-shaped Tetromino
-  [
-    [0, 0], [0, 1], [1, 1], [1, 2]
-  ],
-  // T-shaped Tetromino
-  [
-    [0, 0], [0, 1], [0, 2], [1, 1]
-  ],
-  // Z-shaped Tetromino
-  [
-    [0, 0], [0, 1], [-1, 1], [-1, 2]
-  ]
-];
+    const canMove = (x, y, shape) => {
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
+          if (shape[i][j] && (y + i >= 20 || gameBoard[y + i][x + j])) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
 
-// Draw a Tetromino on the game board
-function drawTetromino(tetromino, x, y) {
-  tetromino.forEach(([dx, dy]) => {
-    const cell = gameContainer.children[y * BOARD_WIDTH + x + dx];
-    if (cell) {
-      cell.classList.add('active');
-    }
-  });
-}
+    const placePiece = () => {
+      const newGameBoard = [...gameBoard];
+      for (let i = 0; i < currentPiece.shape.length; i++) {
+        for (let j = 0; j < currentPiece.shape[i].length; j++) {
+          if (currentPiece.shape[i][j]) {
+            newGameBoard[currentPiece.position.y + i][currentPiece.position.x + j] = true;
+          }
+        }
+      }
+      setGameBoard(newGameBoard);
+    };
 
-// Game loop
-function gameLoop() {
-  // Move the Tetromino down
-  // Rotate the Tetromino
-  // Check for completed lines and clear them
-  // Spawn a new Tetromino
-  // Update the game board
+    return React.createElement(
+      'div',
+      { className: "tetris-game" },
+      React.createElement('h2', null, "Tetris"),
+      React.createElement('p', null, `Score: ${score}`),
+      React.createElement(
+        'div',
+        { className: "game-board" },
+        gameBoard.map((row, y) =>
+          React.createElement(
+            'div',
+            { key: y, className: "game-row" },
+            row.map((cell, x) =>
+              React.createElement(
+                'div',
+                {
+                  key: `${x}-${y}`,
+                  className: `game-cell ${cell ? 'filled' : ''} ${currentPiece.position.x === x && currentPiece.position.y === y ? 'active' : ''}`
+                }
+              )
+            )
+          )
+        )
+      )
+    );
+  };
 
-  requestAnimationFrame(gameLoop);
-}
+  return () => React.createElement(TetrisGame, { assetsUrl: assetsUrl });
+};
 
-gameLoop();
-
-// Handle user input
-document.addEventListener('keydown', (event) => {
-  // Handle left, right, down, and rotate key presses
-});
+console.log('Tetris game script loaded');
