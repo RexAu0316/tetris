@@ -7,38 +7,42 @@ window.initGame = (React) => {
     const boardHeight = 20;
     const [board, setBoard] = useState(Array.from({ length: boardHeight }, () => Array(boardWidth).fill(0)));
     const [currentPosition, setCurrentPosition] = useState({ x: Math.floor(Math.random() * boardWidth), y: 0 });
+    const [isGameOver, setIsGameOver] = useState(false);
 
     const dropSquare = () => {
-  setCurrentPosition((prev) => {
-    const newY = prev.y + 1;
+      if (isGameOver) return;
 
-    // Check if the square can move down
-    if (newY < boardHeight && board[newY][prev.x] === 0) {
-      return { x: prev.x, y: newY }; // Move down
-    } else {
-      // Place the square on the board
-      const newBoard = [...board];
-      newBoard[prev.y][prev.x] = 1; // Mark the position of the square
-      setBoard(newBoard);
+      setCurrentPosition((prev) => {
+        const newY = prev.y + 1;
 
-      // Check if the game is over
-      if (prev.y === 0) {
-        alert('Game Over!'); // Alert if the square cannot drop
-        return { x: prev.x, y: prev.y }; // Stay in the same position
-      }
+        // Check if the square can move down
+        if (newY < boardHeight && board[newY][prev.x] === 0) {
+          return { x: prev.x, y: newY }; // Move down
+        } else {
+          // Place the square on the board
+          const newBoard = [...board];
+          newBoard[prev.y][prev.x] = 1; // Mark the position of the square
+          setBoard(newBoard);
 
-      // Generate a new square at the top
-      return { x: Math.floor(Math.random() * boardWidth), y: 0 }; 
-    }
-  });
-};
+          // Check if the game is over
+          if (prev.y === 0) {
+            setIsGameOver(true);
+            alert('Game Over!');
+            return prev; // Stay in the same position
+          }
+
+          // Generate a new square at the top
+          return { x: Math.floor(Math.random() * boardWidth), y: 0 };
+        }
+      });
+    };
 
     useEffect(() => {
       const interval = setInterval(() => {
         dropSquare();
       }, 1000);
       return () => clearInterval(interval);
-    }, [board]);
+    }, [isGameOver, board]);
 
     // Render the game board
     return React.createElement(
