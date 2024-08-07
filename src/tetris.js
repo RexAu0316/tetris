@@ -13,13 +13,13 @@ window.initGame = (React) => {
         const newY = prev.y + 1;
         // Check if the square would hit the bottom or another piece
         if (newY < boardHeight && board[newY][prev.x] === 0) {
-          return { x: prev.x, y: newY };
+          return { x: prev.x, y: newY }; // Continue dropping down
         } else {
           // Place the square on the board
           const newBoard = [...board];
           newBoard[prev.y][prev.x] = 1; // Mark the position of the square
           setBoard(newBoard);
-          // Generate a new random position for the next square
+          // Generate a new random position for the next square at the top
           return { x: Math.floor(Math.random() * boardWidth), y: 0 }; 
         }
       });
