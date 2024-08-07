@@ -1,6 +1,6 @@
 // tetris.js
 window.initGame = (React) => {
-  const { useState, useEffect, useCallback } = React;
+  const { useState, useEffect } = React;
 
   const TetrisGame = () => {
     const [position, setPosition] = useState({ x: 4, y: 0 }); // Start in the middle at the top
@@ -50,7 +50,6 @@ window.initGame = (React) => {
               return { ...prev, y: prev.y + 1 };
             } else {
               setIsGameOver(true);
-              clearInterval(dropInterval);
               return prev;
             }
           });
