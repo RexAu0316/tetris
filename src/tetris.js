@@ -18,41 +18,6 @@ window.initGame = (React) => {
       setCurrentPosition(0);
     };
 
-    const handleSquareLand = (prev, squareColumn) => {
-      const newFixedSquares = [
-        { row: prev, column: squareColumn },
-        { row: prev, column: squareColumn + 1 },
-        { row: prev + 1, column: squareColumn },
-        { row: prev + 1, column: squareColumn + 1 },
-      ];
-      
-      const updatedFixedSquares = [...fixedSquares, ...newFixedSquares];
-      
-      // Logic to clear full columns
-      const columnsToClear = [];
-      for (let col = 0; col < BOARD_WIDTH; col++) {
-        const filledRows = updatedFixedSquares.filter(sq => sq.column === col).map(sq => sq.row);
-        if (filledRows.length === BOARD_HEIGHT) {
-          columnsToClear.push(col);
-        }
-      }
-
-      // Remove filled columns and adjust remaining squares
-      let clearedSquares = updatedFixedSquares.filter(square => !columnsToClear.includes(square.column));
-      
-      // Shift down squares in columns above cleared columns
-      columnsToClear.forEach(col => {
-        clearedSquares = clearedSquares.map(square => {
-          if (square.column > col) {
-            return { row: square.row, column: square.column - 1 }; // Shift left
-          }
-          return square;
-        });
-      });
-
-      setFixedSquares(clearedSquares);
-    };
-
     const handleKeyDown = (event) => {
       if (!isFalling) return;
 
@@ -73,7 +38,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              handleSquareLand(prev, squareColumn);
+              setFixedSquares(prevFixed => [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ]);
               setIsFalling(false);
               return prev;
             }
@@ -95,7 +66,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down automatically
             } else {
               // Square has landed
-              handleSquareLand(prev, squareColumn);
+              setFixedSquares(prevFixed => [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ]);
               setIsFalling(false);
               return prev;
             }
