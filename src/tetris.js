@@ -33,31 +33,36 @@ window.initGame = (React, assetsUrl) => {
     const [isGameOver, setIsGameOver] = useState(false);
 
     useEffect(() => {
-      const interval = setInterval(() => {
-        if (isGameOver) {
-          clearInterval(interval);
-          return;
-        }
+  const interval = setInterval(() => {
+    if (isGameOver) {
+      clearInterval(interval);
+      return;
+    }
 
-        const newActivePiece = { ...activePiece, y: activePiece.y + 1 };
-        if (canMovePiece(newActivePiece)) {
-          setActivePiece(newActivePiece);
-        } else {
-          fixActivePiece();
-          checkForCompletedRows();
-          setActivePiece({
-            x: Math.floor(BOARD_WIDTH / 2),
-            y: 0,
-            width: 1,
-            height: 1,
-          });
-          if (!canMovePiece({ ...newActivePiece, y: 0 })) {
-            setIsGameOver(true);
-          }
-        }
-      }, 500);
-      return () => clearInterval(interval);
-    }, [activePiece, isGameOver]);
+    const newActivePiece = { ...activePiece, y: activePiece.y + 1 };
+    if (canMovePiece(newActivePiece)) {
+      setActivePiece(newActivePiece);
+    } else {
+      // Check if the active piece has reached the bottom of the board
+      if (activePiece.y === 0) {
+        // Game over, the player cannot place any more pieces
+        setIsGameOver(true);
+      } else {
+        // Fix the active piece in place and generate a new piece
+        fixActivePiece();
+        checkForCompletedRows();
+        setActivePiece({
+          x: Math.floor(BOARD_WIDTH / 2),
+          y: 0,
+          width: 1,
+          height: 1,
+        });
+      }
+    }
+  }, 500);
+
+  return () => clearInterval(interval);
+}, [activePiece, isGameOver]);
 
     const fixActivePiece = () => {
       const newBoard = board.map((row, y) =>
