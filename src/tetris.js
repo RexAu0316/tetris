@@ -57,15 +57,15 @@ useEffect(() => {
     if (isFalling) {
       setCurrentPosition((prev) => {
         if (prev < boardHeight - 2) { // Adjust for 2x2 square
-          return prev + 1;
+          return prev + 1; // Move down
         } else {
           // Add the square to the fixed squares when it reaches the bottom
           setFixedSquares((prevFixed) => [
             ...prevFixed,
             { row: prev, column: squareColumn },
-            { row: prev, column: squareColumn + 1 }, // Right cell
-            { row: prev + 1, column: squareColumn }, // Below cell
-            { row: prev + 1, column: squareColumn + 1 }, // Below right cell
+            { row: prev, column: squareColumn + 1 },
+            { row: prev + 1, column: squareColumn },
+            { row: prev + 1, column: squareColumn + 1 },
           ]);
           setIsFalling(false); // Stop falling
           return prev; // Keep the position the same
@@ -75,6 +75,17 @@ useEffect(() => {
   }, 500);
 
   return () => clearInterval(interval);
+}, [isFalling]);
+
+// Drop a new square after the current one stops
+useEffect(() => {
+  if (!isFalling) {
+    const timeout = setTimeout(() => {
+      dropNewSquare(); // Generate new square
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }
 }, [isFalling]);
 
 const dropNewSquare = () => {
