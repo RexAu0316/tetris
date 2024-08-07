@@ -4,11 +4,11 @@ window.initGame = (React, assetsUrl) => {
   const BOARD_WIDTH = 10;
   const BOARD_HEIGHT = 20;
 
-  const TetrisBlock = ({ x, y, isActive }) => {
+  const TetrisBlock = ({ x, y, isActive, color }) => {
     return React.createElement(
       'div',
       {
-        className: `tetris-block ${isActive ? 'active' : ''}`,
+        className: `tetris-block block-color-${color} ${isActive ? 'active' : ''}`,
         style: {
           gridColumnStart: x + 1,
           gridRowStart: y + 1,
@@ -27,8 +27,9 @@ window.initGame = (React, assetsUrl) => {
     const [activePiece, setActivePiece] = useState({
       x: Math.floor(BOARD_WIDTH / 2),
       y: 0,
-      width: 1,
-      height: 1,
+      width: 2,
+      height: 2,
+      color: 1,
     });
 
     useEffect(() => {
@@ -42,13 +43,14 @@ window.initGame = (React, assetsUrl) => {
             };
           } else {
             // Stop the piece and update the board
-            updateBoard(prevPiece.x, prevPiece.y, prevPiece.width, prevPiece.height, board, true);
+            updateBoard(prevPiece.x, prevPiece.y, prevPiece.width, prevPiece.height, prevPiece.color, board, true);
             // Generate a new piece
             return {
               x: Math.floor(BOARD_WIDTH / 2),
               y: 0,
-              width: 1,
-              height: 1,
+              width: 2,
+              height: 2,
+              color: Math.floor(Math.random() * 7) + 1,
             };
           }
         });
@@ -69,11 +71,11 @@ window.initGame = (React, assetsUrl) => {
     };
 
     // Helper function to update the board with the new piece
-    const updateBoard = (x, y, width, height, board, isActive) => {
+    const updateBoard = (x, y, width, height, color, board, isActive) => {
       const newBoard = [...board];
       for (let i = y; i < y + height; i++) {
         for (let j = x; j < x + width; j++) {
-          newBoard[i][j] = isActive;
+          newBoard[i][j] = isActive ? color : false;
         }
       }
       setBoard(newBoard);
@@ -88,7 +90,7 @@ window.initGame = (React, assetsUrl) => {
             y >= activePiece.y &&
             y < activePiece.y + activePiece.height
           ) {
-            return true;
+            return activePiece.color;
           }
           return false;
         })
@@ -104,12 +106,13 @@ window.initGame = (React, assetsUrl) => {
         'div',
         { className: 'game-board' },
         board.map((row, y) =>
-          row.map((isActive, x) =>
+          row.map((color, x) =>
             React.createElement(TetrisBlock, {
               key: `${x}-${y}`,
               x,
               y,
-              isActive,
+              isActive: color !== false,
+              color: color || 0,
             })
           )
         )
