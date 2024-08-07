@@ -5,24 +5,43 @@ window.initGame = (React) => {
 
   const Tetris = () => {
     const [position, setPosition] = useState(0);
-    const boardHeight = 15; // Height of the game board
+    const [isFalling, setIsFalling] = useState(true);
+    const boardHeight = 20; // Height of the game board
     const boardWidth = 10; // Width of the game board
 
     useEffect(() => {
       const interval = setInterval(() => {
-        setPosition((prev) => {
-          // Stop the square when it reaches the bottom
-          if (prev < boardHeight - 1) {
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            return prev; // Don't change position if it is at the bottom
-          }
-        });
+        if (isFalling) {
+          setPosition((prev) => {
+            // Stop the square when it reaches the bottom
+            if (prev < boardHeight - 1) {
+              return prev + 1;
+            } else {
+              setIsFalling(false); // Stop falling
+              clearInterval(interval);
+              return prev; // Don't change position if it is at the bottom
+            }
+          });
+        }
       }, 500); // Adjust speed of falling
 
       return () => clearInterval(interval);
-    }, []);
+    }, [isFalling]);
+
+    const dropNewSquare = () => {
+      setPosition(0); // Reset position for the new square
+      setIsFalling(true); // Start falling again
+    };
+
+    useEffect(() => {
+      if (!isFalling) {
+        const timeout = setTimeout(() => {
+          dropNewSquare(); // Drop a new square after the current one stops
+        }, 1000); // Wait before dropping the next square
+
+        return () => clearTimeout(timeout);
+      }
+    }, [isFalling]);
 
     return React.createElement(
       'div',
