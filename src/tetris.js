@@ -44,35 +44,36 @@ window.initGame = (React) => {
       }
     }, [isFalling]);
 
-    return React.createElement(
-      'div',
-      { className: "tetris" },
-      React.createElement('h2', null, "Simplified Tetris"),
+return React.createElement(
+  'div',
+  { className: "tetris" },
+  React.createElement('h2', null, "Simplified Tetris"),
+  React.createElement(
+    'div',
+    { className: "game-board" },
+    Array.from({ length: boardHeight }, (_, rowIndex) =>
       React.createElement(
         'div',
-        { className: "game-board" },
-        Array.from({ length: boardHeight }, (_, rowIndex) =>
+        { key: rowIndex, className: "row" },
+        Array.from({ length: boardWidth }, (_, colIndex) =>
           React.createElement(
             'div',
-            { key: rowIndex, className: "row" },
-            Array.from({ length: boardWidth }, (_, colIndex) =>
-              React.createElement(
-                'div',
-                {
-                  key: colIndex,
-                  className: `cell ${rowIndex === currentPosition || rowIndex === currentPosition + 1 ? 'active' : ''}`,
-                },
-                // Render the 2x2 square only if it's in the current position
-                (rowIndex === currentPosition || rowIndex === currentPosition + 1) && 
-                (colIndex === squareColumn || colIndex === squareColumn + 1) && 
-                React.createElement('div', { className: "square" })
-              )
-            )
+            {
+              key: colIndex,
+              className: `cell ${ 
+                (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
+                (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) 
+                ? 'active' : ''
+              }`,
+            },
+            // No separate div for square needed
+            ''
           )
         )
       )
-    );
-  };
+    )
+  )
+);
 
   return () => React.createElement(Tetris);
 };
