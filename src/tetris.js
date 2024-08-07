@@ -1,5 +1,5 @@
 window.initGame = (React) => {
-  const { useState, useEffect, useRef } = React;
+  const { useState, useEffect } = React;
 
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
@@ -21,22 +21,23 @@ window.initGame = (React) => {
     const handleKeyDown = (event) => {
       if (!isFalling) return;
 
-      const moveSquare = (newColumn) => {
-        setSquareColumn(prev => Math.max(0, Math.min(newColumn, BOARD_WIDTH - 2))); // Ensure within bounds
-      };
-
       switch (event.key) {
         case "ArrowLeft":
-          moveSquare(squareColumn - 1);
+          if (squareColumn > 0) {
+            setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
+          }
           break;
         case "ArrowRight":
-          moveSquare(squareColumn + 1);
+          if (squareColumn < BOARD_WIDTH - 2) {
+            setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
+          }
           break;
         case "ArrowDown":
-          setCurrentPosition((prev) => {
+          setCurrentPosition(prev => {
             if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1;
+              return prev + 1; // Move down
             } else {
+              // Square has landed
               setFixedSquares(prevFixed => [
                 ...prevFixed,
                 { row: prev, column: squareColumn },
@@ -60,10 +61,11 @@ window.initGame = (React) => {
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (isFalling) {
-          setCurrentPosition((prev) => {
+          setCurrentPosition(prev => {
             if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1;
+              return prev + 1; // Move down automatically
             } else {
+              // Square has landed
               setFixedSquares(prevFixed => [
                 ...prevFixed,
                 { row: prev, column: squareColumn },
