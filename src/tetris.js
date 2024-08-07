@@ -10,10 +10,6 @@ const BOARD_HEIGHT = 20;
 // Get the game container element
 const gameContainer = document.getElementById('game-container');
 
-// Define the game board dimensions
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
-
 // Create the game board
 function drawGameBoard() {
   for (let y = 0; y < BOARD_HEIGHT; y++) {
