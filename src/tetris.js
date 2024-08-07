@@ -15,7 +15,7 @@ window.initGame = (React) => {
         if (isFalling) {
           setCurrentPosition((prev) => {
             // Stop the square when it reaches the bottom
-            if (prev < boardHeight - 2) { // Adjust for 2x2 square
+            if (prev < boardHeight - 1) {
               return prev + 1;
             } else {
               setDroppedSquare(prev); // Save the position of the dropped square
@@ -61,11 +61,10 @@ window.initGame = (React) => {
                 'div',
                 {
                   key: colIndex,
-                  className: `cell ${rowIndex === currentPosition || rowIndex === currentPosition + 1 ? 'active' : ''}`,
+                  className: `cell ${rowIndex === currentPosition ? 'active' : ''}`,
                 },
                 // Render the square only if it's in the current position or if it's the dropped square
-                (rowIndex === currentPosition || rowIndex === currentPosition + 1) && 
-                (colIndex === droppedSquare || colIndex === droppedSquare + 1) && 
+                (rowIndex === currentPosition || rowIndex === droppedSquare) && 
                 React.createElement('div', { className: "square" })
               )
             )
