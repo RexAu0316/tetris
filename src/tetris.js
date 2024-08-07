@@ -6,6 +6,7 @@ window.initGame = (React) => {
   const Tetris = () => {
     const [position, setPosition] = useState(0);
     const boardHeight = 20; // Height of the game board
+    const boardWidth = 10; // Width of the game board
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -30,14 +31,20 @@ window.initGame = (React) => {
       React.createElement(
         'div',
         { className: "game-board" },
-        Array.from({ length: boardHeight }, (_, index) =>
+        Array.from({ length: boardHeight }, (_, rowIndex) =>
           React.createElement(
             'div',
-            {
-              key: index,
-              className: `row ${index === position ? 'active' : ''}`,
-            },
-            index === position && React.createElement('div', { className: "square" })
+            { key: rowIndex, className: "row" },
+            Array.from({ length: boardWidth }, (_, colIndex) =>
+              React.createElement(
+                'div',
+                {
+                  key: colIndex,
+                  className: `cell ${rowIndex === position ? 'active' : ''}`,
+                },
+                rowIndex === position && React.createElement('div', { className: "square" })
+              )
+            )
           )
         )
       )
