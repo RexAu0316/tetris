@@ -4,7 +4,8 @@ window.initGame = (React) => {
   const { useState, useEffect } = React;
 
   const Tetris = () => {
-    const [position, setPosition] = useState(0);
+    const [positions, setPositions] = useState([]); // Array to hold the positions of dropped squares
+    const [currentPosition, setCurrentPosition] = useState(0); // Current position of the falling square
     const [isFalling, setIsFalling] = useState(true);
     const boardHeight = 20; // Height of the game board
     const boardWidth = 10; // Width of the game board
@@ -12,11 +13,12 @@ window.initGame = (React) => {
     useEffect(() => {
       const interval = setInterval(() => {
         if (isFalling) {
-          setPosition((prev) => {
+          setCurrentPosition((prev) => {
             // Stop the square when it reaches the bottom
             if (prev < boardHeight - 1) {
               return prev + 1;
             } else {
+              setPositions((prevPositions) => [...prevPositions, prev]); // Save the position of the dropped square
               setIsFalling(false); // Stop falling
               clearInterval(interval);
               return prev; // Don't change position if it is at the bottom
@@ -29,7 +31,7 @@ window.initGame = (React) => {
     }, [isFalling]);
 
     const dropNewSquare = () => {
-      setPosition(0); // Reset position for the new square
+      setCurrentPosition(0); // Reset position for the new square
       setIsFalling(true); // Start falling again
     };
 
@@ -59,9 +61,11 @@ window.initGame = (React) => {
                 'div',
                 {
                   key: colIndex,
-                  className: `cell ${rowIndex === position ? 'active' : ''}`,
+                  className: `cell ${rowIndex === currentPosition ? 'active' : ''}`,
                 },
-                rowIndex === position && React.createElement('div', { className: "square" })
+                // Render the square if it is in the current position or already dropped
+                (rowIndex === currentPosition || positions.includes(rowIndex)) && 
+                React.createElement('div', { className: "square" })
               )
             )
           )
