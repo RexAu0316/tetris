@@ -13,13 +13,16 @@ const Tetris = () => {
     const interval = setInterval(() => {
       if (isFalling) {
         setCurrentPosition((prev) => {
-          if (prev < boardHeight - 1) { // Change to -1
+          if (prev < boardHeight - 2) { // Adjust for 2x2 square
             return prev + 1;
           } else {
             // Add the square to the fixed squares when it reaches the bottom
             setFixedSquares((prevFixed) => [
               ...prevFixed,
-              { row: prev, column: squareColumn }, // Only add the bottom cell
+              { row: prev, column: squareColumn },
+              { row: prev, column: squareColumn + 1 }, // Right cell
+              { row: prev + 1, column: squareColumn }, // Below cell
+              { row: prev + 1, column: squareColumn + 1 }, // Below right cell
             ]);
             setIsFalling(false); // Stop falling
             clearInterval(interval);
@@ -36,7 +39,10 @@ const Tetris = () => {
     setCurrentPosition(0); // Reset position for the new square
     setSquareColumn(4); // Reset to starting column in the middle
     // Check if new square overlaps with fixed squares
-    if (fixedSquares.some(fixed => fixed.row === 0 && (fixed.column === squareColumn))) {
+    if (fixedSquares.some(fixed => 
+      (fixed.row === 0 && (fixed.column === squareColumn || fixed.column === squareColumn + 1)) ||
+      (fixed.row === 1 && (fixed.column === squareColumn || fixed.column === squareColumn + 1))
+    )) {
       alert("Game Over!"); // Game over logic if the new square overlaps
       return;
     }
@@ -70,7 +76,8 @@ const Tetris = () => {
               {
                 key: colIndex,
                 className: `cell ${
-                  (rowIndex === currentPosition && colIndex === squareColumn) || 
+                  (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
+                  (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
                   fixedSquares.some(fixed => fixed.row === rowIndex && fixed.column === colIndex)
                   ? 'active' : ''
                 }`,
