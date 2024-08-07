@@ -4,15 +4,13 @@ window.initGame = (React) => {
   const Tetris = () => {
     const boardHeight = 20;
     const boardWidth = 10;
-    const [currentPosition, setCurrentPosition] = useState(0); // Fixed at 0 for new squares
-    const [isFalling, setIsFalling] = useState(true);
-    const [squareColumn, setSquareColumn] = useState(4);
+    const [currentPosition, setCurrentPosition] = useState(0);
+    const [isFalling, setIsFalling] = useState(false); // Initially not falling
+    const [squareColumn, setSquareColumn] = useState(null); // Start with no column
     const [fixedSquares, setFixedSquares] = useState([]);
 
     const dropNewSquare = () => {
-      // Set the square column based on the last placed square's column
-      setSquareColumn(squareColumn); // Use the last column where the square was placed
-      setIsFalling(true); // Start falling again
+      setIsFalling(true); // Start falling
       setCurrentPosition(0); // Reset to the top of the board
     };
 
@@ -20,21 +18,18 @@ window.initGame = (React) => {
       if (isFalling) {
         switch (event.key) {
           case "ArrowLeft":
-            // Move left if not at the left edge
             if (squareColumn > 0) {
               setSquareColumn((prev) => prev - 1);
             }
             break;
           case "ArrowRight":
-            // Move right if not at the right edge
-            if (squareColumn < boardWidth - 2) { // Adjust for 2x2 square
+            if (squareColumn < boardWidth - 2) {
               setSquareColumn((prev) => prev + 1);
             }
             break;
           case "ArrowDown":
-            // Place the square where it is currently falling
             setCurrentPosition((prev) => {
-              if (prev < boardHeight - 2) { // Adjust for 2x2 square
+              if (prev < boardHeight - 2) {
                 return prev + 1;
               } else {
                 // Add the square to the fixed squares when it reaches the bottom
@@ -59,11 +54,16 @@ window.initGame = (React) => {
       }
     };
 
+    const handleCellClick = (colIndex) => {
+      if (!isFalling && squareColumn === null) { // Only if not falling and no column selected
+        setSquareColumn(colIndex); // Set the selected column
+        dropNewSquare(); // Start dropping the square
+      }
+    };
+
     useEffect(() => {
-      // Add event listener for keydown
       window.addEventListener('keydown', handleKeyDown);
       return () => {
-        // Clean up the event listener
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, [isFalling, squareColumn]);
@@ -72,7 +72,7 @@ window.initGame = (React) => {
       const interval = setInterval(() => {
         if (isFalling) {
           setCurrentPosition((prev) => {
-            if (prev < boardHeight - 2) { // Adjust for 2x2 square
+            if (prev < boardHeight - 2) {
               return prev + 1;
             } else {
               // Add the square to the fixed squares when it reaches the bottom
@@ -91,16 +91,6 @@ window.initGame = (React) => {
       }, 500);
 
       return () => clearInterval(interval);
-    }, [isFalling]);
-
-    useEffect(() => {
-      if (!isFalling) {
-        const timeout = setTimeout(() => {
-          dropNewSquare(); // Drop a new square after the current one stops
-        }, 1000);
-
-        return () => clearTimeout(timeout);
-      }
     }, [isFalling]);
 
     return React.createElement(
@@ -125,6 +115,7 @@ window.initGame = (React) => {
                     fixedSquares.some(fixed => fixed.row === rowIndex && fixed.column === colIndex)
                     ? 'active' : ''
                   }`,
+                  onClick: () => handleCellClick(colIndex), // Allow column selection
                 },
                 ''
               )
