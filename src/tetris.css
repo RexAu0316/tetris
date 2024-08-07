@@ -1,23 +1,22 @@
 .tetris-game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
 }
 
 .game-board {
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(20, 30px);
-  gap: 1px;
+  display: inline-block;
+  border: 2px solid black;
+}
+
+.row {
+  display: flex;
 }
 
 .cell {
   width: 30px;
   height: 30px;
-  background-color: lightgray;
-  border: 1px solid #ddd;
+  border: 1px solid lightgray;
 }
 
-.square {
+.cell.active {
   background-color: blue;
 }
