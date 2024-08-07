@@ -44,39 +44,38 @@ window.initGame = (React) => {
       }
     }, [isFalling]);
 
-return React.createElement(
-  'div',
-  { className: "tetris" },
-  React.createElement('h2', null, "Simplified Tetris"),
-  React.createElement(
-    'div',
-    { className: "game-board" },
-    Array.from({ length: boardHeight }, (_, rowIndex) =>
+    return React.createElement(
+      'div',
+      { className: "tetris" },
+      React.createElement('h2', null, "Simplified Tetris"),
       React.createElement(
         'div',
-        { key: rowIndex, className: "row" },
-        Array.from({ length: boardWidth }, (_, colIndex) =>
+        { className: "game-board" },
+        Array.from({ length: boardHeight }, (_, rowIndex) =>
           React.createElement(
             'div',
-            {
-              key: colIndex,
-              className: `cell ${ 
-                (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
-                (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) 
-                ? 'active' : ''
-              }`,
-            },
-            // No separate div for square needed
-            ''
+            { key: rowIndex, className: "row" },
+            Array.from({ length: boardWidth }, (_, colIndex) =>
+              React.createElement(
+                'div',
+                {
+                  key: colIndex,
+                  className: `cell ${ 
+                    (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
+                    (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) 
+                    ? 'active' : ''
+                  }`,
+                },
+                ''
+              )
+            )
           )
         )
       )
-    )
-  )
-);
+    );
+  };
 
-  return () => React.createElement(Tetris);
+  return Tetris; // Corrected return statement
 };
 
 console.log('Tetris game script loaded');
-}
