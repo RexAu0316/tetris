@@ -9,71 +9,64 @@ window.initGame = (React) => {
     const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
 
-const dropNewSquare = (column) => {
-  // Set the square column to the specified column
-  setSquareColumn(column); // Set the column where the player wants to drop the square
-  setIsFalling(true); // Start falling again
-  setCurrentPosition(0); // Set the position to the top of the board
-};
+    const dropNewSquare = () => {
+      // Set the square column based on the last placed square's column
+      setSquareColumn(squareColumn); // Use the last column where the square was placed
+      setIsFalling(true); // Start falling again
+      setCurrentPosition(0); // Reset to the top of the board
+    };
 
-const handleKeyDown = (event) => {
-  if (isFalling) {
-    switch (event.key) {
-      case "ArrowLeft":
-        // Move left if not at the left edge
-        if (squareColumn > 0) {
-          setSquareColumn((prev) => prev - 1);
+    const handleKeyDown = (event) => {
+      if (isFalling) {
+        switch (event.key) {
+          case "ArrowLeft":
+            // Move left if not at the left edge
+            if (squareColumn > 0) {
+              setSquareColumn((prev) => prev - 1);
+            }
+            break;
+          case "ArrowRight":
+            // Move right if not at the right edge
+            if (squareColumn < boardWidth - 2) { // Adjust for 2x2 square
+              setSquareColumn((prev) => prev + 1);
+            }
+            break;
+          case "ArrowDown":
+            // Place the square where it is currently falling
+            setCurrentPosition((prev) => {
+              if (prev < boardHeight - 2) { // Adjust for 2x2 square
+                return prev + 1;
+              } else {
+                // Add the square to the fixed squares when it reaches the bottom
+                setFixedSquares((prevFixed) => [
+                  ...prevFixed,
+                  { row: prev, column: squareColumn },
+                  { row: prev, column: squareColumn + 1 }, // Right cell
+                  { row: prev + 1, column: squareColumn }, // Below cell
+                  { row: prev + 1, column: squareColumn + 1 }, // Below right cell
+                ]);
+                setIsFalling(false); // Stop falling
+                return prev; // Keep the position the same
+              }
+            });
+            break;
+          case "ArrowUp":
+            // Optional: Implement rotation or other logic
+            break;
+          default:
+            break;
         }
-        break;
-      case "ArrowRight":
-        // Move right if not at the right edge
-        if (squareColumn < boardWidth - 2) { // Adjust for 2x2 square
-          setSquareColumn((prev) => prev + 1);
-        }
-        break;
-      case "ArrowDown":
-        // Place the square where it is currently falling
-        setCurrentPosition((prev) => {
-          if (prev < boardHeight - 2) { // Adjust for 2x2 square
-            return prev + 1;
-          } else {
-            // Add the square to the fixed squares when it reaches the bottom
-            setFixedSquares((prevFixed) => [
-              ...prevFixed,
-              { row: prev, column: squareColumn },
-              { row: prev, column: squareColumn + 1 }, // Right cell
-              { row: prev + 1, column: squareColumn }, // Below cell
-              { row: prev + 1, column: squareColumn + 1 }, // Below right cell
-            ]);
-            setIsFalling(false); // Stop falling
-            return prev; // Keep the position the same
-          }
-        });
-        break;
-      case "ArrowUp":
-        // Optional: Implement rotation or other logic
-        break;
-      default:
-        break;
-    }
-  }
-};
+      }
+    };
 
-// Call dropNewSquare with the current squareColumn
-useEffect(() => {
-  if (!isFalling) {
-    const timeout = setTimeout(() => {
-      dropNewSquare(squareColumn); // Drop a new square in the current column
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }
-}, [isFalling, squareColumn]);
     useEffect(() => {
+      // Add event listener for keydown
       window.addEventListener('keydown', handleKeyDown);
       return () => {
+        // Clean up the event listener
         window.removeEventListener('keydown', handleKeyDown);
       };
-    }, [isFalling, squareColumn]); // Dependencies to re-attach
+    }, [isFalling, squareColumn]);
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -99,21 +92,6 @@ useEffect(() => {
 
       return () => clearInterval(interval);
     }, [isFalling]);
-
-    const dropNewSquare = () => {
-      // Set the square column randomly while ensuring it fits
-      let newSquareColumn;
-      do {
-        newSquareColumn = Math.floor(Math.random() * (boardWidth - 1)); // Random column [0, boardWidth-2]
-      } while (fixedSquares.some(fixed =>
-        (fixed.row === 0 && (fixed.column === newSquareColumn || fixed.column === newSquareColumn + 1)) ||
-        (fixed.row === 1 && (fixed.column === newSquareColumn || fixed.column === newSquareColumn + 1))
-      ));
-
-      setSquareColumn(newSquareColumn); // Set new random starting column
-      setIsFalling(true); // Start falling again
-      setCurrentPosition(0); // Set the position to the top of the board
-    };
 
     useEffect(() => {
       if (!isFalling) {
