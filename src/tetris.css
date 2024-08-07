@@ -2,8 +2,10 @@
 #tetris-container {
   width: 320px;
   height: 640px;
-  border: 1px solid black;
+  border: 2px solid #333;
   position: relative;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Tetris Grid */
@@ -19,24 +21,27 @@
 .tetris-block {
   background-color: #ccc;
   border: 1px solid #999;
+  transition: background-color 0.2s ease-in-out;
 }
 
 /* Different Block Colors */
-.block-color-1 { background-color: #f00; }
-.block-color-2 { background-color: #0f0; }
-.block-color-3 { background-color: #00f; }
-.block-color-4 { background-color: #ff0; }
-.block-color-5 { background-color: #0ff; }
-.block-color-6 { background-color: #f0f; }
-.block-color-7 { background-color: #999; }
+.block-color-1 { background-color: #ff6b6b; }
+.block-color-2 { background-color: #4bc0c8; }
+.block-color-3 { background-color: #9b59b6; }
+.block-color-4 { background-color: #f1c40f; }
+.block-color-5 { background-color: #2ecc71; }
+.block-color-6 { background-color: #e74c3c; }
+.block-color-7 { background-color: #95a5a6; }
 
 /* Game UI Elements */
 .game-score {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 18px;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
   font-weight: bold;
+  color: #333;
+  text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
 }
 
 .game-over-message {
@@ -44,7 +49,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
   color: #f00;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
