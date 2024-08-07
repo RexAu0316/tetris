@@ -8,7 +8,6 @@ window.initGame = (React) => {
     const [isFalling, setIsFalling] = useState(true);
     const boardHeight = 20; // Height of the game board
     const boardWidth = 10; // Width of the game board
-    const [droppedSquare, setDroppedSquare] = useState(null); // Position of the dropped square
     const [squareColumn, setSquareColumn] = useState(4); // Column where the square will fall (starting in the middle)
 
     useEffect(() => {
@@ -19,7 +18,6 @@ window.initGame = (React) => {
             if (prev < boardHeight - 2) { // Adjust for 2x2 square
               return prev + 1;
             } else {
-              setDroppedSquare(prev); // Save the position of the dropped square
               setIsFalling(false); // Stop falling
               clearInterval(interval);
               return prev; // Don't change position if it is at the bottom
@@ -64,7 +62,7 @@ window.initGame = (React) => {
                   key: colIndex,
                   className: `cell ${rowIndex === currentPosition || rowIndex === currentPosition + 1 ? 'active' : ''}`,
                 },
-                // Render the 2x2 square only if it's in the current position or if it's the dropped square
+                // Render the 2x2 square only if it's in the current position
                 (rowIndex === currentPosition || rowIndex === currentPosition + 1) && 
                 (colIndex === squareColumn || colIndex === squareColumn + 1) && 
                 React.createElement('div', { className: "square" })
