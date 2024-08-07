@@ -6,7 +6,7 @@ window.initGame = (React) => {
     const boardWidth = 10;
     const boardHeight = 20;
     const [board, setBoard] = useState(Array.from({ length: boardHeight }, () => Array(boardWidth).fill(0)));
-    const [currentPosition, setCurrentPosition] = useState({ x: 4, y: 0 });
+    const [currentPosition, setCurrentPosition] = useState({ x: Math.floor(Math.random() * boardWidth), y: 0 });
 
     const dropSquare = () => {
       setCurrentPosition((prev) => {
@@ -19,7 +19,8 @@ window.initGame = (React) => {
           const newBoard = [...board];
           newBoard[prev.y][prev.x] = 1; // Mark the position of the square
           setBoard(newBoard);
-          return { x: 4, y: 0 }; // Reset position for the next square
+          // Generate a new random position for the next square
+          return { x: Math.floor(Math.random() * boardWidth), y: 0 }; 
         }
       });
     };
