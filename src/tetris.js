@@ -1,64 +1,86 @@
+// tetris.js
 window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
-  // Define the tetrimino shapes
-  const tetriminoShapes = [
-    [[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], // O-Tetrimino
-  ];
+  const BOARD_WIDTH = 10;
+  const BOARD_HEIGHT = 20;
 
-  const Tetris = ({ assetsUrl }) => {
-    const [score, setScore] = useState(0);
-    const [grid, setGrid] = useState(Array(20).fill().map(() => Array(10).fill(0)));
-    const [currentTetrimino, setCurrentTetrimino] = useState(0);
-    const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 }); // Initialize position to 0, 0
-    const [currentRotation, setCurrentRotation] = useState(0);
+  const TetrisBlock = ({ x, y, isActive }) => {
+    return React.createElement(
+      'div',
+      {
+        className: `tetris-block ${isActive ? 'active' : ''}`,
+        style: {
+          gridColumnStart: x + 1,
+          gridRowStart: y + 1,
+        },
+      },
+      null
+    );
+  };
+
+  const TetrisGame = ({ assetsUrl }) => {
+    const [board, setBoard] = useState(
+      Array(BOARD_HEIGHT)
+        .fill(0)
+        .map(() => Array(BOARD_WIDTH).fill(false))
+    );
+    const [activePiece, setActivePiece] = useState({
+      x: Math.floor(BOARD_WIDTH / 2),
+      y: 0,
+      width: 1,
+      height: 1,
+    });
 
     useEffect(() => {
       const interval = setInterval(() => {
-        // Handle tetrimino movement and rotation
-        handleTetriminoMovement();
-      }, 1000);
+        setActivePiece((prevPiece) => ({
+          ...prevPiece,
+          y: prevPiece.y + 1,
+        }));
+      }, 500);
       return () => clearInterval(interval);
     }, []);
 
-    // ... (other functions remain the same)
-
-    const spawnTetrimino = () => {
-      // Spawn a new O-Tetrimino at a random x-position
-      setCurrentTetrimino(0);
-      setCurrentPosition({ x: Math.floor(Math.random() * 7), y: 0 }); // Random x-position, y = 0
-      setCurrentRotation(0);
-    };
+    useEffect(() => {
+      const newBoard = board.map((row, y) =>
+        row.map((_, x) => {
+          if (
+            x >= activePiece.x &&
+            x < activePiece.x + activePiece.width &&
+            y >= activePiece.y &&
+            y < activePiece.y + activePiece.height
+          ) {
+            return true;
+          }
+          return false;
+        })
+      );
+      setBoard(newBoard);
+    }, [activePiece]);
 
     return React.createElement(
       'div',
-      { className: "tetris", onKeyDown: handleKeyDown, tabIndex: 0 },
-      React.createElement('h2', null, "Tetris"),
-      React.createElement('p', null, `Score: ${score}`),
+      { className: 'tetris-game' },
+      React.createElement('h2', null, 'Tetris'),
       React.createElement(
         'div',
-        { className: "game-board" },
-        grid.map((row, y) =>
-          React.createElement(
-            'div',
-            { key: y, className: "row" },
-            row.map((cell, x) =>
-              React.createElement(
-                'div',
-                {
-                  key: `${x}-${y}`,
-                  className: `cell ${cell ? 'occupied' : ''}`
-                },
-                cell && React.createElement('img', { src: `${assetsUrl}/tetrimino.png`, alt: "Tetrimino" })
-              )
-            )
+        { className: 'game-board' },
+        board.map((row, y) =>
+          row.map((isActive, x) =>
+            React.createElement(TetrisBlock, {
+              key: `${x}-${y}`,
+              x,
+              y,
+              isActive,
+            })
           )
         )
       )
     );
   };
 
-  return () => React.createElement(Tetris, { assetsUrl: assetsUrl });
+  return () => React.createElement(TetrisGame, { assetsUrl: assetsUrl });
 };
 
 console.log('Tetris game script loaded');
