@@ -31,3 +31,9 @@
   height: 100%;
   background-color: blue; /* Color of the square piece */
 }
+
+.cell .square {
+  width: 24px; /* 2 cells wide */
+  height: 24px; /* 2 cells high */
+  position: relative; /* Reset position for the square */
+}
