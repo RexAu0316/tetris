@@ -1,14 +1,15 @@
+// tetris.js
 window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
   const BOARD_WIDTH = 10;
   const BOARD_HEIGHT = 20;
 
-  const TetrisBlock = ({ x, y, isActive, isFixed }) => {
+  const TetrisBlock = ({ x, y, isActive }) => {
     return React.createElement(
       'div',
       {
-        className: `tetris-block ${isActive ? 'active' : ''} ${isFixed ? 'fixed' : ''}`,
+        className: `tetris-block ${isActive ? 'active' : ''}`,
         style: {
           gridColumnStart: x + 1,
           gridRowStart: y + 1,
@@ -19,52 +20,29 @@ window.initGame = (React, assetsUrl) => {
   };
 
   const TetrisGame = ({ assetsUrl }) => {
-  const [board, setBoard] = useState(
-    Array.from({ length: BOARD_HEIGHT }, () =>
-      Array.from({ length: BOARD_WIDTH }, () => false)
-    )
-  );
-  const [activePiece, setActivePiece] = useState({
-    x: Math.floor(BOARD_WIDTH / 2),
-    y: 0,
-    width: 1,
-    height: 1,
-  });
-  const [isGameOver, setIsGameOver] = useState(false);
+    const [board, setBoard] = useState(
+      Array(BOARD_HEIGHT)
+        .fill(0)
+        .map(() => Array(BOARD_WIDTH).fill(false))
+    );
+    const [activePiece, setActivePiece] = useState({
+      x: Math.floor(BOARD_WIDTH / 2),
+      y: 0,
+      width: 1,
+      height: 1,
+    });
 
     useEffect(() => {
-  const interval = setInterval(() => {
-    if (isGameOver) {
-      clearInterval(interval);
-      return;
-    }
+      const interval = setInterval(() => {
+        setActivePiece((prevPiece) => ({
+          ...prevPiece,
+          y: prevPiece.y + 1,
+        }));
+      }, 500);
+      return () => clearInterval(interval);
+    }, []);
 
-    const newActivePiece = { ...activePiece, y: activePiece.y + 1 };
-    if (canMovePiece(newActivePiece)) {
-      setActivePiece(newActivePiece);
-    } else {
-      // Check if the active piece has reached the bottom of the board
-      if (activePiece.y === 0) {
-        // Game over, the player cannot place any more pieces
-        setIsGameOver(true);
-      } else {
-        // Fix the active piece in place and generate a new piece
-        fixActivePiece();
-        checkForCompletedRows();
-        setActivePiece({
-          x: Math.floor(BOARD_WIDTH / 2),
-          y: 0,
-          width: 1,
-          height: 1,
-        });
-      }
-    }
-  }, 500);
-
-  return () => clearInterval(interval);
-}, [activePiece, isGameOver]);
-
-    const fixActivePiece = () => {
+    useEffect(() => {
       const newBoard = board.map((row, y) =>
         row.map((_, x) => {
           if (
@@ -75,60 +53,30 @@ window.initGame = (React, assetsUrl) => {
           ) {
             return true;
           }
-          return row[x];
+          return false;
         })
       );
       setBoard(newBoard);
-    };
-
-    const checkForCompletedRows = () => {
-      const newBoard = board.filter((row) => row.some((cell) => !cell));
-      while (newBoard.length < BOARD_HEIGHT) {
-        newBoard.unshift(Array(BOARD_WIDTH).fill(false));
-      }
-      setBoard(newBoard);
-    };
-
-    const canMovePiece = (piece) => {
-      return (
-        piece.y >= 0 &&
-        piece.y + piece.height <= BOARD_HEIGHT &&
-        piece.x >= 0 &&
-        piece.x + piece.width <= BOARD_WIDTH &&
-        !board.some((row, y) =>
-          row.some((cell, x) => {
-            return (
-              x >= piece.x &&
-              x < piece.x + piece.width &&
-              y >= piece.y &&
-              y < piece.y + piece.height &&
-              cell
-            );
-          })
-        )
-      );
-    };
+    }, [activePiece]);
 
     return React.createElement(
       'div',
       { className: 'tetris-game' },
       React.createElement('h2', null, 'Tetris'),
-      isGameOver
-        ? React.createElement('div', { className: 'game-over' }, 'Game Over')
-        : React.createElement(
-            'div',
-            { className: 'game-board' },
-            board.map((row, y) =>
-              row.map((isActive, x) =>
-                React.createElement(TetrisBlock, {
-                  key: `${x}-${y}`,
-                  x,
-                  y,
-                  isActive,
-                  isFixed: isActive && !board[y][x],
-                })
-              )
-        ))
+      React.createElement(
+        'div',
+        { className: 'game-board' },
+        board.map((row, y) =>
+          row.map((isActive, x) =>
+            React.createElement(TetrisBlock, {
+              key: `${x}-${y}`,
+              x,
+              y,
+              isActive,
+            })
+          )
+        )
+      )
     );
   };
 
