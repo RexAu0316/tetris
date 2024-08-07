@@ -4,11 +4,11 @@ window.initGame = (React) => {
   const { useState, useEffect } = React;
 
   const Tetris = () => {
-    const [currentPosition, setCurrentPosition] = useState(0); // Current position of the falling square
+    const [currentPosition, setCurrentPosition] = useState(0); // Current vertical position of the falling square
     const [isFalling, setIsFalling] = useState(true);
     const boardHeight = 20; // Height of the game board
     const boardWidth = 10; // Width of the game board
-    const [droppedSquare, setDroppedSquare] = useState(null); // Store the position of the dropped square
+    const [droppedSquare, setDroppedSquare] = useState(null); // Position of the dropped square
     const [squareColumn, setSquareColumn] = useState(4); // Column where the square will fall (starting in the middle)
 
     useEffect(() => {
@@ -64,7 +64,7 @@ window.initGame = (React) => {
                   key: colIndex,
                   className: `cell ${rowIndex === currentPosition || rowIndex === currentPosition + 1 ? 'active' : ''}`,
                 },
-                // Render the square only if it's in the current position or if it's the dropped square
+                // Render the 2x2 square only if it's in the current position or if it's the dropped square
                 (rowIndex === currentPosition || rowIndex === currentPosition + 1) && 
                 (colIndex === squareColumn || colIndex === squareColumn + 1) && 
                 React.createElement('div', { className: "square" })
