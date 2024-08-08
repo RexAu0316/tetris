@@ -5,22 +5,26 @@ window.initGame = (React) => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
     const FALL_INTERVAL = 500; // milliseconds
-    const DROP_DELAY = 1000; // milliseconds
 
     const [currentPosition, setCurrentPosition] = useState(0);
-    const [isFalling, setIsFalling] = useState(true);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [fixedSquares, setFixedSquares] = useState([]);
+    const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
+    const [isFalling, setIsFalling] = useState(true);
 
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
+      setCurrentPosition(0); // Start from the top
       setIsFalling(true);
-      setCurrentPosition(0);
+    };
+
+    const clearFullRows = (newBoard) => {
+      const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
+      const filledRows = BOARD_HEIGHT - filteredBoard.length; // Count the filled rows
+      const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
+      return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
 
     const handleKeyDown = (event) => {
-      if (!isFalling) return;
-
       switch (event.key) {
         case "ArrowLeft":
           if (squareColumn > 0) {
@@ -38,20 +42,16 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ]);
-              setIsFalling(false);
+              const newBoard = [...board];
+              newBoard[prev][squareColumn] = 1;
+              newBoard[prev][squareColumn + 1] = 1;
+              newBoard[prev + 1][squareColumn] = 1;
+              newBoard[prev + 1][squareColumn + 1] = 1;
+              setBoard(clearFullRows(newBoard));
+              dropNewSquare(); // Drop a new square
               return prev;
             }
           });
-          break;
-        case "ArrowUp":
-          // Implement rotation if desired
           break;
         default:
           break;
@@ -66,14 +66,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down automatically
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ]);
-              setIsFalling(false);
+              const newBoard = [...board];
+              newBoard[prev][squareColumn] = 1;
+              newBoard[prev][squareColumn + 1] = 1;
+              newBoard[prev + 1][squareColumn] = 1;
+              newBoard[prev + 1][squareColumn + 1] = 1;
+              setBoard(clearFullRows(newBoard));
+              dropNewSquare(); // Drop a new square
               return prev;
             }
           });
@@ -81,50 +80,41 @@ window.initGame = (React) => {
       }, FALL_INTERVAL);
 
       return () => clearInterval(handleInterval);
-    }, [isFalling, squareColumn]);
-
-    useEffect(() => {
-      if (!isFalling) {
-        const timeout = setTimeout(dropNewSquare, DROP_DELAY);
-        return () => clearTimeout(timeout);
-      }
-    }, [isFalling]);
+    }, [isFalling, squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
-    }, [isFalling]);
+    }, []);
 
     return React.createElement(
       'div',
       { className: "tetris" },
-      React.createElement('h2', null, "Simplified Tetris"),
+      React.createElement('h2', null, "Simple Tetris"),
       React.createElement(
         'div',
         { className: "game-board" },
-        Array.from({ length: BOARD_HEIGHT }, (_, rowIndex) => 
-          React.createElement(
+        // Create a new board for rendering to include the current falling square
+        board.map((row, rowIndex) => {
+          const isCurrentRow = rowIndex === currentPosition || rowIndex === currentPosition + 1;
+          return React.createElement(
             'div',
             { key: rowIndex, className: "row" },
-            Array.from({ length: BOARD_WIDTH }, (_, colIndex) =>
-              React.createElement(
+            row.map((cell, colIndex) => {
+              const isActive = cell === 1 || (isCurrentRow && (colIndex === squareColumn || colIndex === squareColumn + 1));
+              return React.createElement(
                 'div',
                 {
                   key: colIndex,
-                  className: `cell ${
-                    (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
-                    (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
-                    fixedSquares.some(fixed => fixed.row === rowIndex && fixed.column === colIndex)
-                    ? 'active' : ''
-                  }`,
+                  className: `cell ${isActive ? 'active' : ''}`,
                 },
                 ''
-              )
-            )
-          )
-        )
+              );
+            })
+          );
+        })
       )
     );
   };
