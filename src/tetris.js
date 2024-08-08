@@ -12,10 +12,15 @@ window.initGame = (React) => {
     const [isFalling, setIsFalling] = useState(true);
 
     const dropNewSquare = () => {
-      setSquareColumn(4); // Reset to middle column
-      setCurrentPosition(0); // Start from the top
-      setIsFalling(true);
-    };
+  if (board[0][4] === 1 || board[0][5] === 1) {
+    alert("Game Over!");
+    setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0))); // Reset the board
+    return;
+  }
+  setSquareColumn(4);
+  setCurrentPosition(0);
+  setIsFalling(true);
+};
 
     const clearFullRows = (newBoard) => {
       const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
