@@ -9,15 +9,10 @@ window.initGame = (React) => {
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
-    const [isGameOver, setIsGameOver] = useState(false); // Track game over state
 
     const dropNewSquare = () => {
-      if (checkCollision(0, squareColumn)) {
-        setIsGameOver(true); // Set game over if new square cannot be placed
-      } else {
-        setSquareColumn(4); // Reset to middle
-        setCurrentPosition(0); // Start from the top
-      }
+      setSquareColumn(4); // Reset to middle
+      setCurrentPosition(0); // Start from the top
     };
 
     const clearFullRows = (newBoard) => {
@@ -28,6 +23,7 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition, newColumn) => {
+      // Check if the square can move down
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
           if (newPosition + i >= BOARD_HEIGHT || board[newPosition + i][newColumn + j] === 1) {
@@ -39,8 +35,6 @@ window.initGame = (React) => {
     };
 
     const handleKeyDown = (event) => {
-      if (isGameOver) return; // Prevent controls if game is over
-
       switch (event.key) {
         case "ArrowLeft":
           if (squareColumn > 0) {
@@ -74,11 +68,6 @@ window.initGame = (React) => {
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
-        if (isGameOver) {
-          clearInterval(handleInterval);
-          return; // Stop the interval if the game is over
-        }
-
         const newPosition = currentPosition + 1;
         if (!checkCollision(newPosition, squareColumn)) {
           setCurrentPosition(newPosition); // Move down automatically
@@ -95,20 +84,19 @@ window.initGame = (React) => {
       }, FALL_INTERVAL);
 
       return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board, isGameOver]);
+    }, [currentPosition, squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
-    }, [isGameOver]);
+    }, []);
 
     return React.createElement(
       'div',
       { className: "tetris" },
       React.createElement('h2', null, "Simple Tetris"),
-      isGameOver && React.createElement('h3', null, "Game Over!"),
       React.createElement(
         'div',
         { className: "game-board" },
