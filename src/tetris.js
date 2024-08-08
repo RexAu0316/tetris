@@ -25,14 +25,16 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newBoard, position, column) => {
-      // Check for collisions with filled cells
-      return (
-        newBoard[position][column] === 1 ||
-        newBoard[position][column + 1] === 1 ||
-        newBoard[position + 1][column] === 1 ||
-        newBoard[position + 1][column + 1] === 1
-      );
-    };
+  if (position >= BOARD_HEIGHT - 2 || column < 0 || column + 1 >= BOARD_WIDTH) {
+    return true; // Prevents moving out of bounds
+  }
+  return (
+    newBoard[position][column] === 1 ||
+    newBoard[position][column + 1] === 1 ||
+    newBoard[position + 1][column] === 1 ||
+    newBoard[position + 1][column + 1] === 1
+  );
+};
 
     const handleKeyDown = (event) => {
       switch (event.key) {
