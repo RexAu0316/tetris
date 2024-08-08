@@ -91,25 +91,31 @@ window.initGame = (React) => {
 
     return React.createElement(
       'div',
-      { className: "game-board" },
-      board.map((row, rowIndex) => {
-        const isCurrentRow = rowIndex === currentPosition || rowIndex === currentPosition + 1;
-        return React.createElement(
-          'div',
-          { key: rowIndex, className: "row" },
-          row.map((cell, colIndex) => {
-            const isActive = cell === 1 || (isCurrentRow && (colIndex === squareColumn || colIndex === squareColumn + 1));
-            return React.createElement(
-              'div',
-              {
-                key: colIndex,
-                className: `cell ${isActive ? 'active' : ''}`,
-              },
-              ''
-            );
-          })
-        );
-      })
+      { className: "tetris" },
+      React.createElement('h2', null, "Simple Tetris"),
+      React.createElement(
+        'div',
+        { className: "game-board" },
+        // Create a new board for rendering to include the current falling square
+        board.map((row, rowIndex) => {
+          const isCurrentRow = rowIndex === currentPosition || rowIndex === currentPosition + 1;
+          return React.createElement(
+            'div',
+            { key: rowIndex, className: "row" },
+            row.map((cell, colIndex) => {
+              const isActive = cell === 1 || (isCurrentRow && (colIndex === squareColumn || colIndex === squareColumn + 1));
+              return React.createElement(
+                'div',
+                {
+                  key: colIndex,
+                  className: `cell ${isActive ? 'active' : ''}`,
+                },
+                ''
+              );
+            })
+          );
+        })
+      )
     );
   };
 
