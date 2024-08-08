@@ -5,11 +5,10 @@ window.initGame = (React) => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
     const FALL_INTERVAL = 500; // milliseconds
-    const DROP_DELAY = 1000; // milliseconds
 
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [fixedSquares, setFixedSquares] = useState([]);
+    const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
 
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
@@ -17,9 +16,10 @@ window.initGame = (React) => {
     };
 
     const clearFullRows = () => {
-      const filledRows = new Set(fixedSquares.map(square => square.row));
-      const newFixedSquares = fixedSquares.filter(square => !filledRows.has(square.row));
-      return newFixedSquares;
+      const newBoard = board.filter(row => row.some(cell => cell === 0));
+      const filledRows = BOARD_HEIGHT - newBoard.length; // Count the filled rows
+      const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
+      return [...emptyRows, ...newBoard]; // Add empty rows at the top
     };
 
     const handleKeyDown = (event) => {
@@ -40,16 +40,13 @@ window.initGame = (React) => {
               return prev + 1; // Move down
             } else {
               // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixed = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-                return clearFullRows(newFixed);
-              });
+              const newBoard = [...board];
+              newBoard[prev][squareColumn] = 1;
+              newBoard[prev][squareColumn + 1] = 1;
+              newBoard[prev + 1][squareColumn] = 1;
+              newBoard[prev + 1][squareColumn + 1] = 1;
+              setBoard(clearFullRows(newBoard));
+              dropNewSquare(); // Drop a new square
               return prev;
             }
           });
@@ -66,16 +63,12 @@ window.initGame = (React) => {
             return prev + 1; // Move down automatically
           } else {
             // Square has landed
-            setFixedSquares(prevFixed => {
-              const newFixed = [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
-              ];
-              return clearFullRows(newFixed);
-            });
+            const newBoard = [...board];
+            newBoard[prev][squareColumn] = 1;
+            newBoard[prev][squareColumn + 1] = 1;
+            newBoard[prev + 1][squareColumn] = 1;
+            newBoard[prev + 1][squareColumn + 1] = 1;
+            setBoard(clearFullRows(newBoard));
             dropNewSquare(); // Drop a new square
             return prev;
           }
@@ -83,7 +76,7 @@ window.initGame = (React) => {
       }, FALL_INTERVAL);
 
       return () => clearInterval(handleInterval);
-    }, [squareColumn]);
+    }, [squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
@@ -99,21 +92,16 @@ window.initGame = (React) => {
       React.createElement(
         'div',
         { className: "game-board" },
-        Array.from({ length: BOARD_HEIGHT }, (_, rowIndex) => 
+        board.map((row, rowIndex) => 
           React.createElement(
             'div',
             { key: rowIndex, className: "row" },
-            Array.from({ length: BOARD_WIDTH }, (_, colIndex) =>
+            row.map((cell, colIndex) =>
               React.createElement(
                 'div',
                 {
                   key: colIndex,
-                  className: `cell ${
-                    (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) || 
-                    (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
-                    fixedSquares.some(fixed => fixed.row === rowIndex && fixed.column === colIndex)
-                    ? 'active' : ''
-                  }`,
+                  className: `cell ${cell ? 'active' : ''}`,
                 },
                 ''
               )
