@@ -47,10 +47,9 @@ window.initGame = (React) => {
           }
           break;
         case "ArrowDown":
-          // Move down only if the piece is falling or has already landed
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (isFalling) {
+          if (isFalling) {
+            setCurrentPosition(prev => {
+              const newPosition = prev + 1;
               if (newPosition < BOARD_HEIGHT - 2 && !checkCollision(board, newPosition, squareColumn)) {
                 return newPosition; // Move down if no collision
               } else {
@@ -65,14 +64,17 @@ window.initGame = (React) => {
                 dropNewSquare(); // Drop a new square
                 return prev; // Return the original position
               }
-            } else {
-              // Allow moving the piece down after it has landed
+            });
+          } else {
+            // Allow moving the piece down after it has landed
+            setCurrentPosition(prev => {
+              const newPosition = prev + 1;
               if (newPosition < BOARD_HEIGHT - 1 && !checkCollision(board, newPosition, squareColumn)) {
                 return newPosition; // Move down if no collision
               }
               return prev; // Stay if it cannot move down
-            }
-          });
+            });
+          }
           break;
         default:
           break;
