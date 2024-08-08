@@ -47,22 +47,33 @@ window.initGame = (React) => {
           }
           break;
         case "ArrowDown":
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (newPosition < BOARD_HEIGHT - 2 && !checkCollision(board, newPosition, squareColumn)) {
-              return newPosition; // Move down if no collision
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1; // Mark the position as filled
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev; // Return the original position
-            }
-          });
+          if (isFalling) {
+            setCurrentPosition(prev => {
+              const newPosition = prev + 1;
+              if (newPosition < BOARD_HEIGHT - 2 && !checkCollision(board, newPosition, squareColumn)) {
+                return newPosition; // Move down if no collision
+              } else {
+                // Square has landed
+                const newBoard = [...board];
+                newBoard[prev][squareColumn] = 1; // Mark the position as filled
+                newBoard[prev][squareColumn + 1] = 1;
+                newBoard[prev + 1][squareColumn] = 1;
+                newBoard[prev + 1][squareColumn + 1] = 1;
+                setBoard(clearFullRows(newBoard));
+                dropNewSquare(); // Drop a new square
+                return prev; // Return the original position
+              }
+            });
+          } else {
+            // Allow moving the piece down after it has landed
+            setCurrentPosition(prev => {
+              const newPosition = prev + 1;
+              if (newPosition < BOARD_HEIGHT - 1 && !checkCollision(board, newPosition, squareColumn)) {
+                return newPosition; // Move down if no collision
+              }
+              return prev; // Stay if it cannot move down
+            });
+          }
           break;
         default:
           break;
@@ -84,7 +95,7 @@ window.initGame = (React) => {
               newBoard[prev + 1][squareColumn] = 1;
               newBoard[prev + 1][squareColumn + 1] = 1;
               setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
+              setIsFalling(false); // Mark as not falling anymore
               return prev; // Return the original position
             }
           });
