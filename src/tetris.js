@@ -8,45 +8,21 @@ window.initGame = (React) => {
     const DROP_DELAY = 1000; // milliseconds
 
     const [currentPosition, setCurrentPosition] = useState(0);
-    const [isFalling, setIsFalling] = useState(true);
     const [squareColumn, setSquareColumn] = useState(4);
     const [fixedSquares, setFixedSquares] = useState([]);
 
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
-      setIsFalling(true);
-      setCurrentPosition(0);
+      setCurrentPosition(0); // Start from the top
     };
 
-const clearFullRows = (squares) => {
-  const rowsFilled = Array(BOARD_HEIGHT).fill(0);
-
-  // Count filled squares per row
-  squares.forEach(({ row }) => {
-    if (row < BOARD_HEIGHT) {
-      rowsFilled[row]++;
-    }
-  });
-
-  // Create a new array without filled rows
-  const newSquares = squares.filter(({ row }) => rowsFilled[row] < BOARD_WIDTH);
-
-  // Shift down the squares above cleared rows
-  for (let row = 0; row < BOARD_HEIGHT; row++) {
-    if (rowsFilled[row] === BOARD_WIDTH) {
-      newSquares.forEach(square => {
-        if (square.row < row) return; // Skip squares below cleared row
-        square.row--; // Shift down
-      });
-    }
-  }
-
-  return newSquares;
-};
+    const clearFullRows = () => {
+      const filledRows = new Set(fixedSquares.map(square => square.row));
+      const newFixedSquares = fixedSquares.filter(square => !filledRows.has(square.row));
+      return newFixedSquares;
+    };
 
     const handleKeyDown = (event) => {
-      if (!isFalling) return;
-
       switch (event.key) {
         case "ArrowLeft":
           if (squareColumn > 0) {
@@ -65,22 +41,18 @@ const clearFullRows = (squares) => {
             } else {
               // Square has landed
               setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                ...prevFixed,
-                { row: prev, column: squareColumn },
-                { row: prev, column: squareColumn + 1 },
-                { row: prev + 1, column: squareColumn },
-                { row: prev + 1, column: squareColumn + 1 },
+                const newFixed = [
+                  ...prevFixed,
+                  { row: prev, column: squareColumn },
+                  { row: prev, column: squareColumn + 1 },
+                  { row: prev + 1, column: squareColumn },
+                  { row: prev + 1, column: squareColumn + 1 },
                 ];
-            return clearFullRows(newFixedSquares);
-        });
-              setIsFalling(false);
+                return clearFullRows(newFixed);
+              });
               return prev;
             }
           });
-          break;
-        case "ArrowUp":
-          // Implement rotation if desired
           break;
         default:
           break;
@@ -89,50 +61,41 @@ const clearFullRows = (squares) => {
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
-        if (isFalling) {
-          setCurrentPosition(prev => {
-            if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1; // Move down automatically
-            } else {
-              // Square has landed
-              setFixedSquares(prevFixed => {
-                const newFixedSquares = [
-                  ...prevFixed,
-                  { row: prev, column: squareColumn },
-                  { row: prev, column: squareColumn + 1 },
-                  { row: prev + 1, column: squareColumn },
-                  { row: prev + 1, column: squareColumn + 1 },
-                ];
-                return clearFullRows(newFixedSquares);
-              });
-              setIsFalling(false);
-              return prev;
-            }
-          });
-        }
+        setCurrentPosition(prev => {
+          if (prev < BOARD_HEIGHT - 2) {
+            return prev + 1; // Move down automatically
+          } else {
+            // Square has landed
+            setFixedSquares(prevFixed => {
+              const newFixed = [
+                ...prevFixed,
+                { row: prev, column: squareColumn },
+                { row: prev, column: squareColumn + 1 },
+                { row: prev + 1, column: squareColumn },
+                { row: prev + 1, column: squareColumn + 1 },
+              ];
+              return clearFullRows(newFixed);
+            });
+            dropNewSquare(); // Drop a new square
+            return prev;
+          }
+        });
       }, FALL_INTERVAL);
 
       return () => clearInterval(handleInterval);
-    }, [isFalling, squareColumn]);
-
-    useEffect(() => {
-      if (!isFalling) {
-        const timeout = setTimeout(dropNewSquare, DROP_DELAY);
-        return () => clearTimeout(timeout);
-      }
-    }, [isFalling]);
+    }, [squareColumn]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
-    }, [isFalling]);
+    }, []);
 
     return React.createElement(
       'div',
       { className: "tetris" },
-      React.createElement('h2', null, "Simplified Tetris"),
+      React.createElement('h2', null, "Simple Tetris"),
       React.createElement(
         'div',
         { className: "game-board" },
