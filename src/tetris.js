@@ -13,12 +13,12 @@ window.initGame = (React) => {
 
     const dropNewSquare = () => {
   if (board[0][4] === 1 || board[0][5] === 1) {
-    alert("Game Over!");
+    alert("Game Over!"); // Implement better game over logic or UI
     setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0))); // Reset the board
     return;
   }
-  setSquareColumn(4);
-  setCurrentPosition(0);
+  setSquareColumn(4); // Reset to middle column
+  setCurrentPosition(0); // Start from the top
   setIsFalling(true);
 };
 
@@ -30,6 +30,7 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newBoard, position, column) => {
+  // Check for out of bounds
   if (position >= BOARD_HEIGHT - 2 || column < 0 || column + 1 >= BOARD_WIDTH) {
     return true; // Prevents moving out of bounds
   }
@@ -89,29 +90,30 @@ window.initGame = (React) => {
     };
 
     useEffect(() => {
-      const handleInterval = setInterval(() => {
-        if (isFalling) {
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (newPosition < BOARD_HEIGHT - 2 && !checkCollision(board, newPosition, squareColumn)) {
-              return newPosition; // Move down if no collision
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              setIsFalling(false); // Mark as not falling anymore
-              return prev; // Return the original position
-            }
-          });
+  const handleInterval = setInterval(() => {
+    if (isFalling) {
+      setCurrentPosition(prev => {
+        const newPosition = prev + 1;
+        if (newPosition < BOARD_HEIGHT - 2 && !checkCollision(board, newPosition, squareColumn)) {
+          return newPosition; // Move down if no collision
+        } else {
+          // Square has landed
+          const newBoard = [...board];
+          newBoard[prev][squareColumn] = 1;
+          newBoard[prev][squareColumn + 1] = 1;
+          newBoard[prev + 1][squareColumn] = 1;
+          newBoard[prev + 1][squareColumn + 1] = 1;
+          setBoard(clearFullRows(newBoard));
+          setIsFalling(false); // Mark as not falling anymore
+          dropNewSquare(); // Drop a new square
+          return prev; // Return the original position
         }
-      }, FALL_INTERVAL);
+      });
+    }
+  }, FALL_INTERVAL);
 
-      return () => clearInterval(handleInterval);
-    }, [isFalling, squareColumn, board]);
+  return () => clearInterval(handleInterval);
+}, [isFalling, squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
