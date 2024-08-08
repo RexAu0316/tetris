@@ -1,29 +1,29 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
-  
+
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
     const FALL_INTERVAL = 500; // milliseconds
-  
+
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [isFalling, setIsFalling] = useState(true);
-  
+
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
       setCurrentPosition(0); // Start from the top
       setIsFalling(true);
     };
-  
+
     const clearFullRows = (newBoard) => {
       const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
       const filledRows = BOARD_HEIGHT - filteredBoard.length; // Count the filled rows
       const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
       return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
-  
+
     const checkCollision = (newBoard, position, column) => {
       // Check for collisions with filled cells
       return (
@@ -33,7 +33,7 @@ window.initGame = (React) => {
         newBoard[position + 1][column + 1] === 1
       );
     };
-  
+
     const handleKeyDown = (event) => {
       switch (event.key) {
         case "ArrowLeft":
@@ -54,7 +54,7 @@ window.initGame = (React) => {
             } else {
               // Square has landed
               const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
+              newBoard[prev][squareColumn] = 1; // Mark the position as filled
               newBoard[prev][squareColumn + 1] = 1;
               newBoard[prev + 1][squareColumn] = 1;
               newBoard[prev + 1][squareColumn + 1] = 1;
@@ -68,7 +68,7 @@ window.initGame = (React) => {
           break;
       }
     };
-  
+
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (isFalling) {
@@ -90,17 +90,17 @@ window.initGame = (React) => {
           });
         }
       }, FALL_INTERVAL);
-  
+
       return () => clearInterval(handleInterval);
     }, [isFalling, squareColumn, board]);
-  
+
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, []);
-  
+
     return React.createElement(
       'div',
       { className: "tetris" },
@@ -108,7 +108,6 @@ window.initGame = (React) => {
       React.createElement(
         'div',
         { className: "game-board" },
-        // Create a new board for rendering to include the current falling square
         board.map((row, rowIndex) => {
           const isCurrentRow = rowIndex === currentPosition || rowIndex === currentPosition + 1;
           return React.createElement(
@@ -130,7 +129,7 @@ window.initGame = (React) => {
       )
     );
   };
-  
+
   return Tetris;
 };
 
