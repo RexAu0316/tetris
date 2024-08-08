@@ -22,11 +22,11 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
 
-    const checkCollision = (newPosition) => {
+    const checkCollision = (newPosition, newColumn) => {
       // Check if the square can move down
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
-          if (newPosition + i >= BOARD_HEIGHT || board[newPosition + i][squareColumn + j] === 1) {
+          if (newPosition + i >= BOARD_HEIGHT || board[newPosition + i][newColumn + j] === 1) {
             return true; // Collision detected
           }
         }
@@ -47,22 +47,19 @@ window.initGame = (React) => {
           }
           break;
         case "ArrowDown":
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (!checkCollision(newPosition)) {
-              return newPosition; // Move down if no collision
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev; // Stay in place
-            }
-          });
+          const newPosition = currentPosition + 1;
+          if (!checkCollision(newPosition, squareColumn)) {
+            setCurrentPosition(newPosition); // Move down if no collision
+          } else {
+            // Square has landed
+            const newBoard = [...board];
+            newBoard[currentPosition][squareColumn] = 1;
+            newBoard[currentPosition][squareColumn + 1] = 1;
+            newBoard[currentPosition + 1][squareColumn] = 1;
+            newBoard[currentPosition + 1][squareColumn + 1] = 1;
+            setBoard(clearFullRows(newBoard));
+            dropNewSquare(); // Drop a new square
+          }
           break;
         default:
           break;
@@ -72,7 +69,7 @@ window.initGame = (React) => {
     useEffect(() => {
       const handleInterval = setInterval(() => {
         const newPosition = currentPosition + 1;
-        if (!checkCollision(newPosition)) {
+        if (!checkCollision(newPosition, squareColumn)) {
           setCurrentPosition(newPosition); // Move down automatically
         } else {
           // Square has landed
@@ -103,7 +100,6 @@ window.initGame = (React) => {
       React.createElement(
         'div',
         { className: "game-board" },
-        // Create a new board for rendering to include the current falling square
         board.map((row, rowIndex) => {
           const isCurrentRow = rowIndex === currentPosition || rowIndex === currentPosition + 1;
           return React.createElement(
