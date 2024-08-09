@@ -1,14 +1,17 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
 
-  // Define Tetromino shapes
-  const TETROMINOS = [
-    { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
-    { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
-    { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
-    { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
-    { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
-  ];
+  // Adjust your Tetromino definitions to match the active color
+const TETROMINOS = [
+  { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
+  { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
+  { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
+  { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
+  { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
+];
+
+// In the render part of your Tetris component, update the logic for active cells
+const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined);
 
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
