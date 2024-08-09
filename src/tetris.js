@@ -67,42 +67,50 @@ window.initGame = (React) => {
   return false;
 };
 
-    const rotateTetromino = () => {
-      const newShape = currentTetromino.shape[0].map((_, index) =>
-        currentTetromino.shape.map(row => row[index]).reverse()
-      );
-      const newTetromino = { ...currentTetromino, shape: newShape };
-      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-        setCurrentTetromino(newTetromino);
-      }
-    };
-
     const handleKeyDown = (event) => {
-      event.preventDefault();
-      if (gameOver) return;
-      switch (event.key) {
-        case "ArrowLeft":
-          if (!checkCollision(currentPosition, squareColumn - 1)) {
-            setSquareColumn(prev => Math.max(0, prev - 1));
-          }
-          break;
-        case "ArrowRight": // Fixed this line
-          if (!checkCollision(currentPosition, squareColumn + 1)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
-          }
-          break;
-        case "ArrowDown":
-          if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-            setCurrentPosition(prev => prev + 1);
-          }
-          break;
-        case "ArrowUp":
-          rotateTetromino();
-          break;
-        default:
-          break;
+  event.preventDefault();
+  if (gameOver) return;
+  switch (event.key) {
+    case "ArrowLeft":
+      if (!checkCollision(currentPosition, squareColumn - 1)) {
+        setSquareColumn(prev => Math.max(0, prev - 1));
       }
-    };
+      break;
+    case "ArrowRight":
+      if (!checkCollision(currentPosition, squareColumn + 1)) {
+        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+      }
+      break;
+    case "ArrowDown":
+      if (!checkCollision(currentPosition + 1, squareColumn)) {
+        setCurrentPosition(prev => prev + 1);
+      }
+      break;
+    case "ArrowUp":
+      rotateTetromino();
+      break;
+    default:
+      break;
+  }
+};
+
+const rotateTetromino = () => {
+  const newShape = currentTetromino.shape[0].map((_, index) =>
+    currentTetromino.shape.map(row => row[index]).reverse()
+  );
+  const newTetromino = { ...currentTetromino, shape: newShape };
+  // Check collision with the new shape
+  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+    setCurrentTetromino(newTetromino);
+  } else {
+    // If collision occurs, check if it fits on the left or right side
+    if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
+    } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right
+    }
+  }
+};
 
     useEffect(() => {
   const handleInterval = setInterval(() => {
