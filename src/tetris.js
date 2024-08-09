@@ -96,7 +96,7 @@ window.initGame = (React) => {
       break;
     ccase "ArrowLeft":
       // Check for collision before moving left
-      if (!checkCollision(currentPosition, squareColumn - 1)) {
+      if (!checkCollision(currentPosition, squareColumn + 1)) {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Ensure column does not go below 0
       }
       break;
