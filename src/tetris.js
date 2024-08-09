@@ -55,21 +55,21 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition, column) => {
-      for (let i = 0; i < currentTetromino.shape.length; i++) {
-        for (let j = 0; j < currentTetromino.shape[i].length; j++) {
-          if (
-            currentTetromino.shape[i][j] &&
-            (newPosition + i >= BOARD_HEIGHT ||
-            column + j < 0 ||
-            column + j >= BOARD_WIDTH ||
-            board[newPosition + i][column + j] === 1)
-          ) {
-            return true; // Collision detected
-          }
-        }
+  for (let i = 0; i < currentTetromino.shape.length; i++) {
+    for (let j = 0; j < currentTetromino.shape[i].length; j++) {
+      if (
+        currentTetromino.shape[i][j] &&
+        (newPosition + i >= BOARD_HEIGHT ||     // Check for bottom collision
+        column + j < 0 ||                     // Check for left collision
+        column + j >= BOARD_WIDTH - currentTetromino.shape[0].length || // Check for right collision
+        (newPosition + i >= 0 && board[newPosition + i][column + j] === 1)) // Check for block collision
+      ) {
+        return true; // Collision detected
       }
-      return false; // No collision
-    };
+    }
+  }
+  return false; // No collision
+};
 
     const handleKeyDown = (event) => {
       event.preventDefault();
