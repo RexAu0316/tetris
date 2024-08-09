@@ -94,23 +94,22 @@ window.initGame = (React) => {
     };
 
     const rotateTetromino = () => {
-      const newShape = currentTetromino.shape[0].map((_, index) =>
-        currentTetromino.shape.map(row => row[index]).reverse()
-      );
-      const newTetromino = { ...currentTetromino, shape: newShape };
+  const newShape = currentTetromino.shape[0].map((_, index) =>
+    currentTetromino.shape.map(row => row[index]).reverse()
+  );
+  const newTetromino = { ...currentTetromino, shape: newShape };
 
-      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-        setCurrentTetromino(newTetromino);
-      } else {
-        // Check if it can fit by moving left or right
-        if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-          setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
-        } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-          setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
-        }
-      }
-    };
-
+  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+    setCurrentTetromino(newTetromino);
+  } else {
+    // Check if it can fit by moving left or right
+    if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
+    } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
+    }
+  }
+};
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (!gameOver && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
