@@ -8,22 +8,25 @@ window.initGame = (React) => {
     const [squareColumn, setSquareColumn] = useState(4);
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [hasLanded, setHasLanded] = useState(false); // Track if the piece has landed
+    const [gameOver, setGameOver] = useState(false); // Track game over state
 
     const dropNewSquare = () => {
+      setSquareColumn(4); // Reset to middle
+      setCurrentPosition(0); // Start from the top
+      setHasLanded(false); // Reset landed state
+
+      // Check for game over condition
       if (checkCollision(0)) {
-        // Game over condition
-        alert("Game Over");
-        resetGame();
-      } else {
-        setSquareColumn(4); // Reset to middle
-        setCurrentPosition(0); // Start from the top
-        setHasLanded(false); // Reset landed state
+        setGameOver(true); // Set game over state
+        alert("Game Over"); // Alert the user
+        resetGame(); // Optionally reset the game after alert
       }
     };
 
     const resetGame = () => {
       setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
-      dropNewSquare();
+      setGameOver(false); // Reset game over state
+      dropNewSquare(); // Start a new game
     };
 
     const clearFullRows = (newBoard) => {
@@ -50,6 +53,7 @@ window.initGame = (React) => {
     };
 
     const handleKeyDown = (event) => {
+      if (gameOver) return; // Prevent any key action if game is over
       switch (event.key) {
         case "ArrowLeft":
           if (squareColumn > 0 && !checkCollision(currentPosition)) {
