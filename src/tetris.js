@@ -76,7 +76,7 @@ window.initGame = (React) => {
       // Check for left border
       if (column < 0) return true;
       // Check for right border
-      if (column >= BOARD_WIDTH - currentTetromino.shape[0].length) return true;
+      if (column + currentTetromino.shape[0].length > BOARD_WIDTH) return true;
       return false;
     };
 
