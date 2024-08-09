@@ -54,6 +54,11 @@ const clearFullRows = (newBoard) => {
 };
 
 const checkCollision = (newPosition, column, tetromino) => {
+  if (!tetromino) {
+    console.error("Tetromino is undefined!");
+    return true; // Treat undefined tetromino as a collision
+  }
+  
   for (let i = 0; i < tetromino.shape.length; i++) {
     for (let j = 0; j < tetromino.shape[i].length; j++) {
       if (tetromino.shape[i][j]) {
@@ -90,24 +95,23 @@ const rotateTetromino = () => {
     }
   }
 };
-  
+
 const handleKeyDown = (event) => {
   event.preventDefault();
   if (gameOver) return;
   switch (event.key) {
     case "ArrowLeft":
-      if (!checkCollision(currentPosition, squareColumn - 1)) {
+      if (!checkCollision(currentPosition, squareColumn - 1, currentTetromino)) {
         setSquareColumn(prev => Math.max(0, prev - 1));
       }
       break;
     case "ArrowRight":
-      // Check for collision before moving right
-      if (!checkCollision(currentPosition, squareColumn + 1)) {
+      if (!checkCollision(currentPosition, squareColumn + 1, currentTetromino)) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
       }
       break;
     case "ArrowDown":
-      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn, currentTetromino)) {
         setCurrentPosition(prev => prev + 1);
       }
       break;
