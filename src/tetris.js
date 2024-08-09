@@ -107,7 +107,7 @@ window.initGame = (React) => {
       'div',
       { className: "tetris" },
       React.createElement('h2', null, "Simple Tetris"),
-      React.createElement('h3', null, `Score: ${score}`), // Display the score
+      React.createElement('h3', null, `Score: ${score}`), // Display the current score
       !gameOver ? (
         React.createElement(
           'div',
