@@ -94,24 +94,27 @@ window.initGame = (React) => {
     };
 
     const rotateTetromino = () => {
-  const newShape = currentTetromino.shape[0].map((_, index) =>
-    currentTetromino.shape.map(row => row[index]).reverse()
-  );
+      const newShape = currentTetromino.shape[0].map((_, index) =>
+        currentTetromino.shape.map(row => row[index]).reverse()
+      );
 
-  const newTetromino = { ...currentTetromino, shape: newShape };
+      const newTetromino = { ...currentTetromino, shape: newShape };
 
-  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-    setCurrentTetromino(newTetromino);
-  } else {
-    // Attempt to move left or right if rotation fails
-    if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
-    } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
-    }
-  }
-};
-    
+      console.log('Before Rotation:', currentTetromino);
+      // Check if the new shape collides
+      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+        setCurrentTetromino(newTetromino);
+      } else {
+        // Attempt to move left or right if rotation fails
+        if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+          setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
+        } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+          setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
+        }
+      }
+      console.log('After Rotation:', newTetromino);
+    };
+
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (!gameOver && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
@@ -178,4 +181,5 @@ window.initGame = (React) => {
   };
   return Tetris;
 };
+
 console.log('Tetris game script loaded');
