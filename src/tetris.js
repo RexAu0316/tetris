@@ -78,31 +78,33 @@ window.initGame = (React) => {
     };
 
     const handleKeyDown = (event) => {
-      event.preventDefault();
-      if (gameOver) return;
-      switch (event.key) {
-        case "ArrowLeft":
-          if (!checkCollision(currentPosition, squareColumn - 1)) {
-            setSquareColumn(prev => Math.max(0, prev - 1));
-          }
-          break;
-        case "ArrowRight": // Fixed this line
-          if (!checkCollision(currentPosition, squareColumn + 1)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
-          }
-          break;
-        case "ArrowDown":
-          if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-            setCurrentPosition(prev => prev + 1);
-          }
-          break;
-        case "ArrowUp":
-          rotateTetromino();
-          break;
-        default:
-          break;
+  event.preventDefault();
+  if (gameOver) return;
+  switch (event.key) {
+    case "ArrowLeft":
+      // Check if moving left would go out of bounds
+      if (!checkCollision(currentPosition, squareColumn - 1)) {
+        setSquareColumn(prev => Math.max(0, prev - 1));
       }
-    };
+      break;
+    case "ArrowRight":
+      // Check if moving right would go out of bounds
+      if (!checkCollision(currentPosition, squareColumn + 1)) {
+        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+      }
+      break;
+    case "ArrowDown":
+      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+        setCurrentPosition(prev => prev + 1);
+      }
+      break;
+    case "ArrowUp":
+      rotateTetromino();
+      break;
+    default:
+      break;
+  }
+};
 
     useEffect(() => {
   const handleInterval = setInterval(() => {
