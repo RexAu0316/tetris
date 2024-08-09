@@ -54,30 +54,34 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard];
     };
 
-    const checkBorders = (column) => {
+    const checkBorders = (column, tetrominoWidth) => {
   // Check for left border
   if (column < 0) return true;
   // Check for right border
-  if (column >= BOARD_WIDTH - currentTetromino.shape[0].length) return true;
+  if (column + tetrominoWidth > BOARD_WIDTH) return true;
   return false;
 };
 
+// In handleKeyDown
 const handleKeyDown = (event) => {
   event.preventDefault();
   if (gameOver) return;
   switch (event.key) {
     case "ArrowLeft":
-      if (!checkBorders(squareColumn - 1) && !checkCollision(currentPosition, squareColumn - 1)) {
+      if (!checkBorders(squareColumn - 1, currentTetromino.shape[0].length) && 
+          !checkCollision(currentPosition, squareColumn - 1)) {
         setSquareColumn(prev => Math.max(0, prev - 1));
       }
       break;
     case "ArrowRight":
-      if (!checkBorders(squareColumn + 1) && !checkCollision(currentPosition, squareColumn + 1)) {
+      if (!checkBorders(squareColumn + 1, currentTetromino.shape[0].length) && 
+          !checkCollision(currentPosition, squareColumn + 1)) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
       }
       break;
     case "ArrowDown":
-      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && 
+          !checkCollision(currentPosition + 1, squareColumn)) {
         setCurrentPosition(prev => prev + 1);
       }
       break;
