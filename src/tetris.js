@@ -50,7 +50,7 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard];
     };
 
-    const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
+   const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
   for (let i = 0; i < tetromino.shape.length; i++) {
     for (let j = 0; j < tetromino.shape[i].length; j++) {
       if (
@@ -60,11 +60,11 @@ window.initGame = (React) => {
         column + j >= BOARD_WIDTH ||
         board[newPosition + i][column + j] === 1)
       ) {
-        return true;
+        return true; // Collision detected
       }
     }
   }
-  return false;
+  return false; // No collision
 };
 
     const handleKeyDown = (event) => {
@@ -99,15 +99,15 @@ const rotateTetromino = () => {
     currentTetromino.shape.map(row => row[index]).reverse()
   );
   const newTetromino = { ...currentTetromino, shape: newShape };
-  // Check collision with the new shape
+
   if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
     setCurrentTetromino(newTetromino);
   } else {
-    // If collision occurs, check if it fits on the left or right side
+    // Check if it can fit by moving left or right
     if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
+      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
     } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right
+      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
     }
   }
 };
