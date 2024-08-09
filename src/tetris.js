@@ -2,12 +2,12 @@ window.initGame = (React) => {
   const { useState, useEffect } = React;
 
   const TETROMINOS = [
-    { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
-    { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
-    { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
-    { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
-    { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
-  ];
+  { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
+  { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
+  { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
+  { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
+  { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
+];
 
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
