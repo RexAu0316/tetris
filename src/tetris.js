@@ -1,5 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
+
   const TETROMINOS = [
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
     { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
@@ -7,6 +8,7 @@ window.initGame = (React) => {
     { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
     { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
   ];
+
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
     const BOARD_WIDTH = 10;
@@ -27,12 +29,14 @@ window.initGame = (React) => {
         setGameOver(true);
       }
     };
+
     const resetGame = () => {
       setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
       setScore(0);
       setGameOver(false);
       dropNewSquare();
     };
+
     const clearFullRows = (newBoard) => {
       const filledRows = newBoard.filter(row => row.every(cell => cell === 1)).length;
       const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
@@ -40,6 +44,7 @@ window.initGame = (React) => {
       setScore(prev => prev + filledRows * 10);
       return [...emptyRows, ...filteredBoard];
     };
+
     const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
       for (let i = 0; i < tetromino.shape.length; i++) {
         for (let j = 0; j < tetromino.shape[i].length; j++) {
@@ -56,9 +61,11 @@ window.initGame = (React) => {
       }
       return false; // No collision
     };
+
     const handleKeyDown = (event) => {
       event.preventDefault();
       if (gameOver) return;
+
       switch (event.key) {
         case "ArrowLeft":
           if (!checkCollision(currentPosition, squareColumn - 1)) {
@@ -82,11 +89,14 @@ window.initGame = (React) => {
           break;
       }
     };
+
     const rotateTetromino = () => {
       const newShape = currentTetromino.shape[0].map((_, index) =>
           currentTetromino.shape.map(row => row[index]).reverse()
       );
+
       const newTetromino = { ...currentTetromino, shape: newShape };
+
       if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
           setCurrentTetromino(newTetromino);
       } else {
@@ -98,6 +108,7 @@ window.initGame = (React) => {
           }
       }
     };
+
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (!gameOver && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
@@ -117,12 +128,14 @@ window.initGame = (React) => {
       }, FALL_INTERVAL);
       return () => clearInterval(handleInterval);
     }, [currentPosition, squareColumn, currentTetromino, gameOver]);
+
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, [gameOver]);
+
     return React.createElement(
       'div',
       { className: "tetris", tabIndex: 0, onFocus: () => dropNewSquare() },
@@ -160,6 +173,8 @@ window.initGame = (React) => {
       )
     );
   };
+
   return Tetris;
 };
+
 console.log('Tetris game script loaded');
