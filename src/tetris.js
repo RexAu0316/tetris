@@ -54,6 +54,7 @@ window.initGame = (React) => {
     };
 
     const handleKeyDown = (event) => {
+      event.preventDefault(); // Prevent default action of arrow keys
       if (gameOver) return; // Prevent any key action if game is over
       switch (event.key) {
         case "ArrowLeft":
@@ -105,7 +106,7 @@ window.initGame = (React) => {
 
     return React.createElement(
       'div',
-      { className: "tetris" },
+      { className: "tetris", tabIndex: 0, onFocus: () => dropNewSquare() }, // Make the div focusable and start the game when focused
       React.createElement('h2', null, "Simple Tetris"),
       React.createElement('h3', null, `Score: ${score}`), // Display the current score
       !gameOver ? (
