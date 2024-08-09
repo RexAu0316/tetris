@@ -65,8 +65,9 @@ window.initGame = (React) => {
     };
 
     const handleKeyDown = (event) => {
-      event.preventDefault();
-      if (gameOver) return;
+    console.log(event.key); // Log key pressed
+    event.preventDefault();
+    if (gameOver) return;
     
       switch (event.key) {
         case "ArrowLeft":
@@ -82,9 +83,9 @@ window.initGame = (React) => {
         case "ArrowUp":
           rotateTetromino(); // Call the rotation function
           break;
-        case "ArrowDown": // Add this case
+            case "ArrowDown":
           if (!checkCollision(currentPosition + 1, squareColumn, currentTetromino)) {
-            setCurrentPosition(prev => prev + 1); // Move down
+            setCurrentPosition(prev => prev + 1);
           }
           break;
         default:
