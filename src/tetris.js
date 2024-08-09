@@ -20,6 +20,7 @@ window.initGame = (React) => {
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
 
+    // Function to get a random Tetromino
     const getRandomTetromino = () => {
       const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
       return TETROMINOS[randomIndex];
@@ -43,11 +44,11 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard];
     };
 
-    const checkCollision = (newPosition, column) => {
-      for (let i = 0; i < currentTetromino.shape.length; i++) {
-        for (let j = 0; j < currentTetromino.shape[i].length; j++) {
+    const checkCollision = (newPosition, column, shape = currentTetromino.shape) => {
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
           if (
-            currentTetromino.shape[i][j] &&
+            shape[i][j] &&
             (newPosition + i >= BOARD_HEIGHT || // Check for bottom boundary
             column + j < 0 || // Check for left boundary
             column + j >= BOARD_WIDTH || // Check for right boundary
