@@ -21,71 +21,62 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition) => {
-      // Check if the square can move down
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          // Check for bottom boundary and existing blocks
-          if (newPosition + i >= BOARD_HEIGHT || squareColumn + j < 0 || squareColumn + j >= BOARD_WIDTH || board[newPosition + i][squareColumn + j] === 1) {
-            return true; // Collision detected
-          }
-        }
+  // Check if the square can move down
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      // Check for bottom boundary and existing blocks
+      if (
+        newPosition + i >= BOARD_HEIGHT ||
+        squareColumn + j < 0 ||
+        squareColumn + j >= BOARD_WIDTH ||
+        board[newPosition + i][squareColumn + j] === 1
+      ) {
+        return true; // Collision detected
       }
-      return false; // No collision
-    };
+    }
+  }
+  return false; // No collision
+};
 
-    const handleKeyDown = (event) => {
-      switch (event.key) {
-        case "ArrowLeft":
-          if (squareColumn > 0 && !checkCollision(currentPosition)) {
-            setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
-          }
-          break;
-        case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
-          }
-          break;
-        case "ArrowDown":
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (!checkCollision(newPosition)) {
-              return newPosition; // Move down if no collision
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev; // Stay in place
-            }
-          });
-          break;
-        default:
-          break;
+const handleKeyDown = (event) => {
+  switch (event.key) {
+    case "ArrowLeft":
+      if (squareColumn > 0 && !checkCollision(currentPosition)) {
+        setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
-    };
+      break;
+    case "ArrowRight":
+      if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition)) {
+        setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
+      }
+      break;
+    case "ArrowDown":
+      if (currentPosition < BOARD_HEIGHT - 2 && !checkCollision(currentPosition + 1)) {
+        setCurrentPosition(prev => prev + 1); // Move down if no collision
+      }
+      break;
+    default:
+      break;
+  }
+};
 
-    useEffect(() => {
-      const handleInterval = setInterval(() => {
-        const newPosition = currentPosition + 1;
-        if (!checkCollision(newPosition)) {
-          setCurrentPosition(newPosition); // Move down automatically
-        } else {
-          // Square has landed
-          const newBoard = [...board];
-          newBoard[currentPosition][squareColumn] = 1;
-          newBoard[currentPosition][squareColumn + 1] = 1;
-          newBoard[currentPosition + 1][squareColumn] = 1;
-          newBoard[currentPosition + 1][squareColumn + 1] = 1;
-          setBoard(clearFullRows(newBoard));
-          dropNewSquare(); // Drop a new square
-        }
-      }, FALL_INTERVAL);
-      return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board]);
+useEffect(() => {
+  const handleInterval = setInterval(() => {
+    if (currentPosition < BOARD_HEIGHT - 2 && !checkCollision(currentPosition + 1)) {
+      setCurrentPosition(prev => prev + 1); // Move down automatically
+    } else {
+      // Square has landed
+      const newBoard = [...board];
+      newBoard[currentPosition][squareColumn] = 1;
+      newBoard[currentPosition][squareColumn + 1] = 1;
+      newBoard[currentPosition + 1][squareColumn] = 1;
+      newBoard[currentPosition + 1][squareColumn + 1] = 1;
+      setBoard(clearFullRows(newBoard));
+      dropNewSquare(); // Drop a new square
+    }
+  }, FALL_INTERVAL);
+  return () => clearInterval(handleInterval);
+}, [currentPosition, squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
