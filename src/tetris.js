@@ -15,20 +15,15 @@ window.initGame = (React) => {
     const FALL_INTERVAL = 500; // milliseconds
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino());
+    const [currentTetromino, setCurrentTetromino] = useState(TETROMINOS[Math.floor(Math.random() * TETROMINOS.length)]);
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
 
-    const getRandomTetromino = () => {
-      const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-      return TETROMINOS[randomIndex];
-    };
-
     const dropNewSquare = () => {
       setSquareColumn(4);
       setCurrentPosition(0);
-      setCurrentTetromino(getRandomTetromino());
+      setCurrentTetromino(TETROMINOS[Math.floor(Math.random() * TETROMINOS.length)]);
 
       if (checkCollision(0, 4)) {
         setGameOver(true);
