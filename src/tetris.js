@@ -39,19 +39,18 @@ window.initGame = (React) => {
 const handleKeyDown = (event) => {
   switch (event.key) {
     case "ArrowLeft":
-      if (squareColumn > 0 && !checkCollision(currentPosition)) {
+      if (squareColumn > 0) {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
       break;
     case "ArrowRight":
-      if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition)) {
+      if (squareColumn < BOARD_WIDTH - 2) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
       }
       break;
     case "ArrowDown":
-      const newPosition = currentPosition + 1;
-      if (!checkCollision(newPosition)) {
-        setCurrentPosition(newPosition); // Move down if no collision
+      if (!checkCollision(currentPosition + 1)) {
+        setCurrentPosition(prev => prev + 1); // Move down if no collision
       }
       break;
     default:
