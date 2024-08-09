@@ -1,17 +1,13 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
 
-  // Adjust your Tetromino definitions to match the active color
-const TETROMINOS = [
-  { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
-  { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
-  { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
-  { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
-  { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
-];
-
-// In the render part of your Tetris component, update the logic for active cells
-const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined);
+  const TETROMINOS = [
+    { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
+    { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
+    { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
+    { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
+    { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
+  ];
 
   const Tetris = () => {
     const BOARD_HEIGHT = 20;
@@ -64,12 +60,8 @@ const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray'
             const newRow = nextPosition + i;
             const newCol = nextColumn + j;
             // Check for left and right borders
-            if (newCol < 0 || newCol >= BOARD_WIDTH) {
+            if (newCol < 0 || newCol >= BOARD_WIDTH || newRow >= BOARD_HEIGHT) {
               return true; // Collision detected with borders
-            }
-            // Check for bottom border
-            if (newRow >= BOARD_HEIGHT) {
-              return true; // Collision detected with bottom
             }
             // Check if the cell is already occupied
             if (newRow >= 0 && board[newRow][newCol] === 1) {
@@ -148,39 +140,41 @@ const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray'
       };
     }, [gameOver]); // Add gameOver as a dependency
 
-    return React.createElement(
-  'div',
-  { className: "game-board" },
-  board.map((row, rowIndex) => {
-    return React.createElement(
-      'div',
-      { key: rowIndex, className: "row" },
-      row.map((cell, colIndex) => {
-        // Determine if this cell is part of the active Tetromino
-        const isActive = currentTetromino.shape.some((tetrominoRow, i) => 
-          tetrominoRow.some((cellValue, j) => 
-            cellValue && rowIndex === currentPosition + i && colIndex === squareColumn + j
-          )
-        );
-
-        const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined); // Gray for landed pieces
-        return React.createElement(
-          'div',
-          {
-            key: colIndex,
-            className: `cell ${isActive ? 'active' : ''}`,
-            style: { backgroundColor: backgroundColor },
-          },
-          ''
-        );
-      })
-    );
-  })
-);
-      ) : (
+    // Render the game board
+    return (
+      gameOver ? (
         React.createElement('div', null,
           React.createElement('h3', null, "Game Over!"),
           React.createElement('button', { onClick: resetGame }, "Restart Game")
+        )
+      ) : (
+        React.createElement(
+          'div',
+          { className: "game-board" },
+          board.map((row, rowIndex) => {
+            return React.createElement(
+              'div',
+              { key: rowIndex, className: "row" },
+              row.map((cell, colIndex) => {
+                const isActive = currentTetromino.shape.some((tetrominoRow, i) => 
+                  tetrominoRow.some((cellValue, j) => 
+                    cellValue && rowIndex === currentPosition + i && colIndex === squareColumn + j
+                  )
+                );
+
+                const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined); // Gray for landed pieces
+                return React.createElement(
+                  'div',
+                  {
+                    key: colIndex,
+                    className: `cell ${isActive ? 'active' : ''}`,
+                    style: { backgroundColor: backgroundColor },
+                  },
+                  ''
+                );
+              })
+            );
+          })
         )
       )
     );
