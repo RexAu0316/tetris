@@ -34,40 +34,27 @@ window.initGame = (React) => {
       return false; // No collision
     };
 
-    const handleKeyDown = (event) => {
-      switch (event.key) {
-        case "ArrowLeft":
-          if (squareColumn > 0) {
-            setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
-          }
-          break;
-        case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - 2) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
-          }
-          break;
-        case "ArrowDown":
-          setCurrentPosition(prev => {
-            const newPosition = prev + 1;
-            if (!checkCollision(newPosition)) {
-              return newPosition; // Move down if no collision
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev; // Stay in place
-            }
-          });
-          break;
-        default:
-          break;
+const handleKeyDown = (event) => {
+  switch (event.key) {
+    case "ArrowLeft":
+      if (squareColumn > 0) {
+        setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
-    };
+      break;
+    case "ArrowRight":
+      if (squareColumn < BOARD_WIDTH - 2) {
+        setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
+      }
+      break;
+    case "ArrowDown":
+      if (!checkCollision(currentPosition + 1)) {
+        setCurrentPosition(prev => prev + 1); // Move down if no collision
+      }
+      break;
+    default:
+      break;
+  }
+};
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
