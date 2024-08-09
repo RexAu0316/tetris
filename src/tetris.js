@@ -96,34 +96,23 @@ window.initGame = (React) => {
     };
 
     const rotateTetromino = () => {
-  const newShape = currentTetromino.shape[0].map((_, index) =>
-      currentTetromino.shape.map(row => row[index]).reverse()
-  );
+      const newShape = currentTetromino.shape[0].map((_, index) =>
+          currentTetromino.shape.map(row => row[index]).reverse()
+      );
 
-  const newTetromino = { ...currentTetromino, shape: newShape };
+      const newTetromino = { ...currentTetromino, shape: newShape };
 
-  // Check if the new shape collides
-  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-      setCurrentTetromino(newTetromino);
-      return; // Rotation successful
-  }
-
-  // If rotation fails, check if it can fit by moving left
-  if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-      setSquareColumn(prev => prev - 1); // Shift left
-      setCurrentTetromino(newTetromino);
-      return; // Rotation successful after shifting left
-  }
-
-  // If still colliding, check if it can fit by moving right
-  if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-      setSquareColumn(prev => prev + 1); // Shift right
-      setCurrentTetromino(newTetromino);
-      return; // Rotation successful after shifting right
-  }
-
-  // If it cannot rotate or fit, do nothing (keep the current tetromino)
-};
+      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+          setCurrentTetromino(newTetromino);
+      } else {
+          // Adjust position if rotation fails
+          if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+              setSquareColumn(prev => prev - 1); // Shift left
+          } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+              setSquareColumn(prev => prev + 1); // Shift right
+          }
+      }
+    };
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
