@@ -1,6 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
-  
+
   // Define Tetromino shapes
   const TETROMINOS = [
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
@@ -59,10 +59,10 @@ window.initGame = (React) => {
         for (let j = 0; j < currentTetromino.shape[i].length; j++) {
           if (
             currentTetromino.shape[i][j] &&
-            (newPosition + i >= BOARD_HEIGHT ||
-            column + j < 0 ||
-            column + j >= BOARD_WIDTH ||
-            board[newPosition + i][column + j] === 1)
+            (newPosition + i >= BOARD_HEIGHT || // Check for bottom boundary
+            column + j < 0 || // Check for left boundary
+            column + j >= BOARD_WIDTH || // Check for right boundary
+            board[newPosition + i][column + j] === 1) // Check for collision with other blocks
           ) {
             return true; // Collision detected
           }
@@ -81,7 +81,8 @@ window.initGame = (React) => {
           }
           break;
         case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - currentTetromino.shape[0].length && !checkCollision(currentPosition, squareColumn + 1)) {
+          // Check for right boundary based on the tetromino's width
+          if (squareColumn <= BOARD_WIDTH - currentTetromino.shape[0].length && !checkCollision(currentPosition, squareColumn + 1)) {
             setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
           }
           break;
