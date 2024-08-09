@@ -1,6 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
-  
+
   // Define Tetromino shapes
   const TETROMINOS = [
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
@@ -16,7 +16,7 @@ window.initGame = (React) => {
     const FALL_INTERVAL = 500; // milliseconds
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [currentTetromino, setCurrentTetromino] = useState(TETROMINOS[0]); // Start with the first Tetromino
+    const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino()); // Start with a random Tetromino
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [hasLanded, setHasLanded] = useState(false);
     const [gameOver, setGameOver] = useState(false);
@@ -59,10 +59,10 @@ window.initGame = (React) => {
         for (let j = 0; j < currentTetromino.shape[i].length; j++) {
           if (
             currentTetromino.shape[i][j] &&
-            (newPosition + i >= BOARD_HEIGHT ||
-            column + j < 0 ||
-            column + j >= BOARD_WIDTH ||
-            board[newPosition + i][column + j] === 1)
+            (newPosition + i >= BOARD_HEIGHT ||     // Check for bottom collision
+            column + j < 0 ||                     // Check for left collision
+            column + j >= BOARD_WIDTH ||          // Check for right collision
+            (newPosition + i >= 0 && board[newPosition + i][column + j] === 1)) // Check for block collision
           ) {
             return true; // Collision detected
           }
@@ -76,17 +76,17 @@ window.initGame = (React) => {
       if (gameOver) return;
       switch (event.key) {
         case "ArrowLeft":
-          if (squareColumn > 0 && !checkCollision(currentPosition, squareColumn - 1)) {
+          if (!checkCollision(currentPosition, squareColumn - 1)) {
             setSquareColumn(prev => Math.max(0, prev - 1));
           }
           break;
         case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - currentTetromino.shape[0].length && !checkCollision(currentPosition, squareColumn + 1)) {
+          if (!checkCollision(currentPosition, squareColumn + 1)) {
             setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
           }
           break;
         case "ArrowDown":
-          if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+          if (!checkCollision(currentPosition + 1, squareColumn)) {
             setCurrentPosition(prev => prev + 1);
           }
           break;
@@ -97,7 +97,7 @@ window.initGame = (React) => {
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
-        if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+        if (!hasLanded && !checkCollision(currentPosition + 1, squareColumn)) {
           setCurrentPosition(prev => prev + 1);
         } else {
           const newBoard = [...board];
@@ -138,7 +138,7 @@ window.initGame = (React) => {
               { key: rowIndex, className: "row" },
               row.map((cell, colIndex) => {
                 const isActive = cell === 1 || 
-                  currentTetromino.shape.some((row, i) => row.some((cell, j) => cell && rowIndex === currentPosition + i && colIndex === squareColumn + j));
+                  currentTetromino.shape.some((tetrominoRow, i) => tetrominoRow.some((cell, j) => cell && rowIndex === currentPosition + i && colIndex === squareColumn + j));
                 return React.createElement(
                   'div',
                   {
