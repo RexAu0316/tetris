@@ -72,8 +72,19 @@ const rotateTetromino = () => {
     currentTetromino.shape.map(row => row[index]).reverse()
   );
   const newTetromino = { ...currentTetromino, shape: newShape };
+
+  // Check for collision with new position
   if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
     setCurrentTetromino(newTetromino);
+  } else {
+    // Attempt to shift left or right if collision occurs
+    if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
+      setCurrentTetromino(newTetromino);
+    } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right
+      setCurrentTetromino(newTetromino);
+    }
   }
 };
 
