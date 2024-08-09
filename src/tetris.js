@@ -21,14 +21,17 @@ window.initGame = (React) => {
     const [score, setScore] = useState(0);
 
     const dropNewSquare = () => {
-      setSquareColumn(4);
-      setCurrentPosition(0);
-      setCurrentTetromino(TETROMINOS[Math.floor(Math.random() * TETROMINOS.length)]);
+  setSquareColumn(4);
+  setCurrentPosition(0);
+  // Set a new random tetromino
+  const newTetromino = TETROMINOS[Math.floor(Math.random() * TETROMINOS.length)];
+  setCurrentTetromino(newTetromino);
 
-      if (checkCollision(0, 4)) {
-        setGameOver(true);
-      }
-    };
+  // Check for game over condition
+  if (checkCollision(0, 4)) {
+    setGameOver(true);
+  }
+};
 
     const resetGame = () => {
       setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
