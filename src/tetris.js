@@ -30,10 +30,10 @@ window.initGame = (React) => {
 
       // Check if it's out of bounds or colliding with landed blocks
       if (
-        row >= BOARD_HEIGHT || 
+        row >= BOARD_HEIGHT ||  // Check if moving out of the board height
         col < 0 || 
         col >= BOARD_WIDTH || 
-        (row < BOARD_HEIGHT && board[row][col] === 1)
+        (row < BOARD_HEIGHT && board[row][col] === 1) // Check for collision with landed blocks
       ) {
         return true; // Collision detected
       }
@@ -68,24 +68,24 @@ const handleKeyDown = (event) => {
 };
 
     useEffect(() => {
-      const handleInterval = setInterval(() => {
-        const newPosition = currentPosition + 1;
-        if (!checkCollision(newPosition)) {
-          setCurrentPosition(newPosition); // Move down automatically
-        } else {
-          // Square has landed
-          const newBoard = [...board];
-          newBoard[currentPosition][squareColumn] = 1;
-          newBoard[currentPosition][squareColumn + 1] = 1;
-          newBoard[currentPosition + 1][squareColumn] = 1;
-          newBoard[currentPosition + 1][squareColumn + 1] = 1;
-          setBoard(clearFullRows(newBoard));
-          dropNewSquare(); // Drop a new square
-        }
-      }, FALL_INTERVAL);
+  const handleInterval = setInterval(() => {
+    const newPosition = currentPosition + 1;
+    if (!checkCollision(newPosition, squareColumn)) {
+      setCurrentPosition(newPosition); // Move down automatically
+    } else {
+      // Square has landed
+      const newBoard = [...board];
+      newBoard[currentPosition][squareColumn] = 1;
+      newBoard[currentPosition][squareColumn + 1] = 1;
+      newBoard[currentPosition + 1][squareColumn] = 1;
+      newBoard[currentPosition + 1][squareColumn + 1] = 1;
+      setBoard(clearFullRows(newBoard));
+      dropNewSquare(); // Drop a new square
+    }
+  }, FALL_INTERVAL);
 
-      return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board]);
+  return () => clearInterval(handleInterval);
+}, [currentPosition, squareColumn, board]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
