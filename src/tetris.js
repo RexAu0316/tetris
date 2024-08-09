@@ -69,7 +69,6 @@ const checkCollision = (newPosition, column, tetromino) => {
   return false;
 };
 
-// Rotate the tetromino and check for bounds
 const rotateTetromino = () => {
   const newShape = currentTetromino.shape[0].map((_, index) => 
     currentTetromino.shape.map(row => row[index]).reverse()
@@ -91,6 +90,7 @@ const rotateTetromino = () => {
     }
   }
 };
+  
 const handleKeyDown = (event) => {
   event.preventDefault();
   if (gameOver) return;
