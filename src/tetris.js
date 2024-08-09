@@ -16,7 +16,7 @@ window.initGame = (React) => {
     const FALL_INTERVAL = 500; // milliseconds
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino());
+    const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino()); // Start with a random Tetromino
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [hasLanded, setHasLanded] = useState(false);
     const [gameOver, setGameOver] = useState(false);
@@ -26,7 +26,7 @@ window.initGame = (React) => {
       setSquareColumn(4); // Reset to middle
       setCurrentPosition(0); // Start from the top
       setHasLanded(false);
-      setCurrentTetromino(getRandomTetromino());
+      setCurrentTetromino(getRandomTetromino()); // Set a new random Tetromino
 
       // Check for game over condition
       if (checkCollision(0, 4)) {
@@ -61,7 +61,7 @@ window.initGame = (React) => {
             currentTetromino.shape[i][j] &&
             (newPosition + i >= BOARD_HEIGHT ||     // Check for bottom collision
             column + j < 0 ||                     // Check for left collision
-            column + j >= BOARD_WIDTH - currentTetromino.shape[0].length || // Check for right collision
+            column + j >= BOARD_WIDTH ||          // Check for right collision
             (newPosition + i >= 0 && board[newPosition + i][column + j] === 1)) // Check for block collision
           ) {
             return true; // Collision detected
