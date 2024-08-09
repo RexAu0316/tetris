@@ -98,26 +98,20 @@ window.initGame = (React) => {
         currentTetromino.shape.map(row => row[index]).reverse()
     );
 
+    // Create a tentative new tetromino
     const newTetromino = { ...currentTetromino, shape: newShape };
 
     console.log('Before Rotation:', currentTetromino);
     console.log('Attempting to rotate to:', newTetromino);
 
-    // Check for collision with the new shape
+    // Check collision after rotation
     if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
         setCurrentTetromino(newTetromino);
         console.log('Rotation successful. New Tetromino:', newTetromino);
     } else {
-        // Attempt to move left or right if rotation fails
-        if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-            setSquareColumn(prev => Math.max(0, prev - 1)); // Move left if possible
-            console.log('Moved left after rotation failure.');
-        } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right if possible
-            console.log('Moved right after rotation failure.');
-        }
+        // If rotation fails, return it to original
+        console.log('Rotation failed, Tetromino unchanged.');
     }
-    console.log('After Rotation:', newTetromino);
 };
 
     useEffect(() => {
