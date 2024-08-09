@@ -1,11 +1,28 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
+  
   const TETROMINOS = [
-    { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
-    { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
-    { shape: [[1, 1, 0], [0, 1, 1]], color: 'red' }, // Z-shape
-    { shape: [[0, 1, 1], [1, 1, 0]], color: 'green' }, // S-shape
-    { shape: [[1], [1], [1], [1]], color: 'cyan' }, // I-shape
+    { shapes: [
+      [[1, 1], [1, 1]] // Square (no rotation)
+    ], color: 'yellow' }, // Square
+    { shapes: [
+      [[0, 1, 0], [1, 1, 1]], // 0 degrees
+      [[1, 0], [1, 1], [1, 0]], // 90 degrees
+      [[1, 1, 1], [0, 1, 0]], // 180 degrees
+      [[0, 1], [1, 1], [0, 1]]  // 270 degrees
+    ], color: 'purple' }, // T-shape
+    { shapes: [
+      [[1, 1, 0], [0, 1, 1]], // 0 degrees
+      [[0, 1], [1, 1], [1, 0]] // 90 degrees
+    ], color: 'red' }, // Z-shape
+    { shapes: [
+      [[0, 1, 1], [1, 1, 0]], // 0 degrees
+      [[1, 0], [1, 1], [0, 1]] // 90 degrees
+    ], color: 'green' }, // S-shape
+    { shapes: [
+      [[1], [1], [1], [1]], // 0 degrees
+      [[1, 1, 1, 1]] // 90 degrees
+    ], color: 'cyan' } // I-shape
   ];
 
   const Tetris = () => {
@@ -51,31 +68,36 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
-  for (let i = 0; i < tetromino.shape.length; i++) {
-    for (let j = 0; j < tetromino.shape[i].length; j++) {
-      if (
-        tetromino.shape[i][j] &&
-        (newPosition + i >= BOARD_HEIGHT || // Checks if out of bounds vertically
-        column + j < 0 ||
-        column + j >= BOARD_WIDTH ||
-        board[newPosition + i][column + j] === 1)
-      ) {
-        return true;
+      for (let i = 0; i < tetromino.shape.length; i++) {
+        for (let j = 0; j < tetromino.shape[i].length; j++) {
+          if (
+            tetromino.shape[i][j] &&
+            (newPosition + i >= BOARD_HEIGHT || // Checks if out of bounds vertically
+            column + j < 0 ||
+            column + j >= BOARD_WIDTH ||
+            board[newPosition + i][column + j] === 1)
+          ) {
+            return true;
+          }
+        }
       }
-    }
-  }
-  return false;
-};
+      return false;
+    };
 
     const rotateTetromino = () => {
-  const newShape = currentTetromino.shape[0].map((_, index) =>
-    currentTetromino.shape.map(row => row[index]).reverse()
-  );
-  const newTetromino = { ...currentTetromino, shape: newShape };
-  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-    setCurrentTetromino(newTetromino);
-  }
-};
+      const currentTetrominoIndex = TETROMINOS.findIndex(t => t.color === currentTetromino.color);
+      const currentShapeIndex = currentTetromino.shape;
+      
+      const newShapeIndex = (currentShapeIndex + 1) % TETROMINOS[currentTetrominoIndex].shapes.length;
+      const newTetromino = {
+        ...currentTetromino,
+        shape: TETROMINOS[currentTetrominoIndex].shapes[newShapeIndex]
+      };
+      
+      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+        setCurrentTetromino(newTetromino);
+      }
+    };
 
     const handleKeyDown = (event) => {
       event.preventDefault();
@@ -86,7 +108,7 @@ window.initGame = (React) => {
             setSquareColumn(prev => Math.max(0, prev - 1));
           }
           break;
-        case "ArrowRight": // Fixed this line
+        case "ArrowRight":
           if (!checkCollision(currentPosition, squareColumn + 1)) {
             setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
           }
@@ -105,26 +127,26 @@ window.initGame = (React) => {
     };
 
     useEffect(() => {
-  const handleInterval = setInterval(() => {
-    // Check if the tetromino can move down
-    if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-      setCurrentPosition(prev => prev + 1);
-    } else {
-      const newBoard = [...board];
-      currentTetromino.shape.forEach((row, i) => {
-        row.forEach((cell, j) => {
-          if (cell) {
-            newBoard[currentPosition + i][squareColumn + j] = 1;
-          }
-        });
-      });
-      setBoard(clearFullRows(newBoard));
-      setHasLanded(true);
-      dropNewSquare();
-    }
-  }, FALL_INTERVAL);
-  return () => clearInterval(handleInterval);
-}, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
+      const handleInterval = setInterval(() => {
+        // Check if the tetromino can move down
+        if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+          setCurrentPosition(prev => prev + 1);
+        } else {
+          const newBoard = [...board];
+          currentTetromino.shape.forEach((row, i) => {
+            row.forEach((cell, j) => {
+              if (cell) {
+                newBoard[currentPosition + i][squareColumn + j] = 1;
+              }
+            });
+          });
+          setBoard(clearFullRows(newBoard));
+          setHasLanded(true);
+          dropNewSquare();
+        }
+      }, FALL_INTERVAL);
+      return () => clearInterval(handleInterval);
+    }, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
