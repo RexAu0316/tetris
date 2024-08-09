@@ -105,25 +105,26 @@ window.initGame = (React) => {
     };
 
     useEffect(() => {
-      const handleInterval = setInterval(() => {
-        if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-          setCurrentPosition(prev => prev + 1);
-        } else {
-          const newBoard = [...board];
-          currentTetromino.shape.forEach((row, i) => {
-            row.forEach((cell, j) => {
-              if (cell) {
-                newBoard[currentPosition + i][squareColumn + j] = 1;
-              }
-            });
-          });
-          setBoard(clearFullRows(newBoard));
-          setHasLanded(true);
-          dropNewSquare();
-        }
-      }, FALL_INTERVAL);
-      return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
+  const handleInterval = setInterval(() => {
+    // Check if the tetromino can move down
+    if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+      setCurrentPosition(prev => prev + 1);
+    } else {
+      const newBoard = [...board];
+      currentTetromino.shape.forEach((row, i) => {
+        row.forEach((cell, j) => {
+          if (cell) {
+            newBoard[currentPosition + i][squareColumn + j] = 1;
+          }
+        });
+      });
+      setBoard(clearFullRows(newBoard));
+      setHasLanded(true);
+      dropNewSquare();
+    }
+  }, FALL_INTERVAL);
+  return () => clearInterval(handleInterval);
+}, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
