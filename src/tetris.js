@@ -50,15 +50,15 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard];
     };
 
-    const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
+   const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
   for (let i = 0; i < tetromino.shape.length; i++) {
     for (let j = 0; j < tetromino.shape[i].length; j++) {
       if (
         tetromino.shape[i][j] &&
         (newPosition + i >= BOARD_HEIGHT || // Checks if out of bounds vertically
-        column + j < 0 ||
-        column + j >= BOARD_WIDTH ||
-        board[newPosition + i][column + j] === 1)
+        column + j < 0 || // Checks if out of bounds left
+        column + j >= BOARD_WIDTH || // Checks if out of bounds right
+        (newPosition + i >= 0 && board[newPosition + i][column + j] === 1)) // Checks if colliding with existing blocks
       ) {
         return true;
       }
@@ -82,7 +82,6 @@ window.initGame = (React) => {
   if (gameOver) return;
   switch (event.key) {
     case "ArrowLeft":
-      // Check if moving left would go out of bounds
       if (!checkCollision(currentPosition, squareColumn - 1)) {
         setSquareColumn(prev => Math.max(0, prev - 1));
       }
