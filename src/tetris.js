@@ -20,6 +20,11 @@ window.initGame = (React) => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
+  const getRandomTetromino = () => {
+    const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
+    return TETROMINOS[randomIndex];
+  };
+
   const dropNewSquare = () => {
     setSquareColumn(4);
     setCurrentPosition(0);
@@ -54,6 +59,51 @@ window.initGame = (React) => {
     return false;
   };
 
+  const clearFullRows = (newBoard) => {
+    const filledRows = newBoard.filter(row => row.every(cell => cell === 1)).length;
+    const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
+    const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
+    setScore(prev => prev + filledRows * 10);
+    return [...emptyRows, ...filteredBoard];
+  };
+
+  const rotateTetromino = () => {
+    const newShape = currentTetromino.shape[0].map((_, index) =>
+      currentTetromino.shape.map(row => row[index]).reverse()
+    );
+    const newTetromino = { ...currentTetromino, shape: newShape };
+    if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+      setCurrentTetromino(newTetromino);
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    event.preventDefault();
+    if (gameOver) return;
+    switch (event.key) {
+      case "ArrowLeft":
+        if (!checkCollision(currentPosition, squareColumn - 1)) {
+          setSquareColumn(prev => Math.max(0, prev - 1));
+        }
+        break;
+      case "ArrowRight":
+        if (!checkCollision(currentPosition, squareColumn + 1)) {
+          setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+        }
+        break;
+      case "ArrowDown":
+        if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+          setCurrentPosition(prev => prev + 1);
+        }
+        break;
+      case "ArrowUp":
+        rotateTetromino();
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
     const handleInterval = setInterval(() => {
       if (gameOver) {
@@ -78,6 +128,13 @@ window.initGame = (React) => {
     }, FALL_INTERVAL);
     return () => clearInterval(handleInterval);
   }, [currentPosition, squareColumn, board, hasLanded, currentTetromino, gameOver]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [gameOver]);
 
   return React.createElement(
     'div',
