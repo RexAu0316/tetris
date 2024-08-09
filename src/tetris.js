@@ -68,14 +68,14 @@ window.initGame = (React) => {
 };
 
     const rotateTetromino = () => {
-      const newShape = currentTetromino.shape[0].map((_, index) =>
-        currentTetromino.shape.map(row => row[index]).reverse()
-      );
-      const newTetromino = { ...currentTetromino, shape: newShape };
-      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-        setCurrentTetromino(newTetromino);
-      }
-    };
+  const newShape = currentTetromino.shape[0].map((_, index) =>
+    currentTetromino.shape.map(row => row[index]).reverse()
+  );
+  const newTetromino = { ...currentTetromino, shape: newShape };
+  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+    setCurrentTetromino(newTetromino);
+  }
+};
 
     const handleKeyDown = (event) => {
       event.preventDefault();
