@@ -24,9 +24,12 @@ const dropNewSquare = () => {
   setSquareColumn(4);
   setCurrentPosition(0);
   setHasLanded(false);
-  setCurrentTetromino(getRandomTetromino());
-  if (checkCollision(0, 4)) {
+  const newTetromino = getRandomTetromino();
+  // Ensure that the new tetromino does not start out of bounds
+  if (checkCollision(0, 4, newTetromino)) {
     setGameOver(true);
+  } else {
+    setCurrentTetromino(newTetromino);
   }
 };
 
@@ -50,35 +53,35 @@ const clearFullRows = (newBoard) => {
   return [...emptyRows, ...filteredBoard];
 };
 
-const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
+const checkCollision = (newPosition, column, tetromino) => {
   for (let i = 0; i < tetromino.shape.length; i++) {
     for (let j = 0; j < tetromino.shape[i].length; j++) {
-      if (
-        tetromino.shape[i][j] &&
-        (newPosition + i >= BOARD_HEIGHT || // Check bottom boundary
-        column + j < 0 || // Check left boundary
-        column + j >= BOARD_WIDTH || // Check right boundary
-        board[newPosition + i][column + j] === 1) // Check for existing blocks
-      ) {
-        return true;
+      if (tetromino.shape[i][j]) {
+        const newRow = newPosition + i;
+        const newCol = column + j;
+        // Check out-of-bounds and collision with filled cells
+        if (newRow >= BOARD_HEIGHT || newCol < 0 || newCol >= BOARD_WIDTH || board[newRow][newCol] === 1) {
+          return true;
+        }
       }
     }
   }
   return false;
 };
 
+// Rotate the tetromino and check for bounds
 const rotateTetromino = () => {
-  const newShape = currentTetromino.shape[0].map((_, index) =>
+  const newShape = currentTetromino.shape[0].map((_, index) => 
     currentTetromino.shape.map(row => row[index]).reverse()
   );
 
   const newTetromino = { ...currentTetromino, shape: newShape };
-
+  
   // Check for collision with the new shape
   if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
     setCurrentTetromino(newTetromino);
   } else {
-    // If rotation fails, you can try to shift left/right to see if it fits
+    // If rotation fails, try to shift left or right
     if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
       setSquareColumn(prev => Math.max(0, prev - 1));
       setCurrentTetromino(newTetromino);
@@ -88,7 +91,6 @@ const rotateTetromino = () => {
     }
   }
 };
-
 const handleKeyDown = (event) => {
   event.preventDefault();
   if (gameOver) return;
