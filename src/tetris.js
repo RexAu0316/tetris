@@ -94,10 +94,10 @@ window.initGame = (React) => {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Ensure column does not go below 0
       }
       break;
-    case "ArrowRight":
-      // Check for collision before moving right
-      if (!checkCollision(currentPosition, squareColumn + 1)) {
-        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1)); // Ensure column does not exceed board width
+    ccase "ArrowLeft":
+      // Check for collision before moving left
+      if (!checkCollision(currentPosition, squareColumn - 1)) {
+        setSquareColumn(prev => Math.max(0, prev - 1)); // Ensure column does not go below 0
       }
       break;
     case "ArrowDown":
