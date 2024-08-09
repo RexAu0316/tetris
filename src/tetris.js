@@ -37,24 +37,27 @@ window.initGame = (React) => {
 };
 
 const handleKeyDown = (event) => {
-  switch (event.key) {
-    case "ArrowLeft":
+  const actions = {
+    ArrowLeft: () => {
       if (squareColumn > 0) {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
-      break;
-    case "ArrowRight":
+    },
+    ArrowRight: () => {
       if (squareColumn < BOARD_WIDTH - 2) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
       }
-      break;
-    case "ArrowDown":
+    },
+    ArrowDown: () => {
       if (!checkCollision(currentPosition + 1)) {
         setCurrentPosition(prev => prev + 1); // Move down if no collision
       }
-      break;
-    default:
-      break;
+    }
+  };
+
+  const action = actions[event.key];
+  if (action) {
+    action(); // Execute the action if it exists
   }
 };
 
