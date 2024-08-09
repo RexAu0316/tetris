@@ -70,6 +70,7 @@ window.initGame = (React) => {
     const handleKeyDown = (event) => {
   event.preventDefault();
   if (gameOver) return;
+
   switch (event.key) {
     case "ArrowLeft":
       if (!checkCollision(currentPosition, squareColumn - 1)) {
@@ -87,7 +88,7 @@ window.initGame = (React) => {
       }
       break;
     case "ArrowUp":
-      rotateTetromino();
+      rotateTetromino(); // Rotate without affecting downward movement
       break;
     default:
       break;
