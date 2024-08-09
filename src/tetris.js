@@ -21,6 +21,12 @@ window.initGame = (React) => {
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
 
+    // Function to get a random tetromino
+    const getRandomTetromino = () => {
+      const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
+      return TETROMINOS[randomIndex];
+    };
+
     const dropNewSquare = () => {
       setSquareColumn(4);
       setCurrentPosition(0);
@@ -36,11 +42,6 @@ window.initGame = (React) => {
       setScore(0);
       setGameOver(false);
       dropNewSquare();
-    };
-
-    const getRandomTetromino = () => {
-      const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-      return TETROMINOS[randomIndex];
     };
 
     const clearFullRows = (newBoard) => {
