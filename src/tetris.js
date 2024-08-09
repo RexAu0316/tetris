@@ -26,9 +26,9 @@ window.initGame = (React) => {
   // Set a new random tetromino
   const newTetromino = TETROMINOS[Math.floor(Math.random() * TETROMINOS.length)];
   setCurrentTetromino(newTetromino);
-
-  // Check for game over condition
-  if (checkCollision(0, 4)) {
+  
+  // Check for game over condition with the new tetromino
+  if (checkCollision(0, 4, newTetromino)) {
     setGameOver(true);
   }
 };
