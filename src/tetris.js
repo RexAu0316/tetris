@@ -51,21 +51,21 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition, column, tetromino = currentTetromino) => {
-      for (let i = 0; i < tetromino.shape.length; i++) {
-        for (let j = 0; j < tetromino.shape[i].length; j++) {
-          if (
-            tetromino.shape[i][j] &&
-            (newPosition + i >= BOARD_HEIGHT ||
-            column + j < 0 ||
-            column + j >= BOARD_WIDTH ||
-            board[newPosition + i][column + j] === 1)
-          ) {
-            return true;
-          }
-        }
+  for (let i = 0; i < tetromino.shape.length; i++) {
+    for (let j = 0; j < tetromino.shape[i].length; j++) {
+      if (
+        tetromino.shape[i][j] &&
+        (newPosition + i >= BOARD_HEIGHT || // Checks if out of bounds vertically
+        column + j < 0 ||
+        column + j >= BOARD_WIDTH ||
+        board[newPosition + i][column + j] === 1)
+      ) {
+        return true;
       }
-      return false;
-    };
+    }
+  }
+  return false;
+};
 
     const rotateTetromino = () => {
       const newShape = currentTetromino.shape[0].map((_, index) =>
