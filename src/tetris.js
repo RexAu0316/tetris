@@ -94,23 +94,17 @@ window.initGame = (React) => {
     };
 
     const rotateTetromino = () => {
-      const newShape = currentTetromino.shape[0].map((_, index) =>
-          currentTetromino.shape.map(row => row[index]).reverse()
-      );
+  const newShape = currentTetromino.shape[0].map((_, index) =>
+    currentTetromino.shape.map(row => row[index]).reverse()
+  );
 
-      const newTetromino = { ...currentTetromino, shape: newShape };
+  const newTetromino = { ...currentTetromino, shape: newShape };
 
-      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-          setCurrentTetromino(newTetromino);
-      } else {
-          // Adjust position if rotation fails
-          if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-              setSquareColumn(prev => prev - 1); // Shift left
-          } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-              setSquareColumn(prev => prev + 1); // Shift right
-          }
-      }
-    };
+  // Check if the new shape collides with existing blocks or the edges
+  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+    setCurrentTetromino(newTetromino); // Update to the new rotated shape
+  }
+};
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
