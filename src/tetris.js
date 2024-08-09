@@ -22,13 +22,19 @@ window.initGame = (React) => {
       return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
 
-    const checkCollision = (newPosition) => {
+   const checkCollision = (newPosition, newSquareColumn) => {
   for (let i = 0; i < 2; i++) {
     for (let j = 0; j < 2; j++) {
-      if (newPosition + i >= BOARD_HEIGHT || 
-          squareColumn + j < 0 || 
-          squareColumn + j >= BOARD_WIDTH || 
-          (newPosition + i < BOARD_HEIGHT && board[newPosition + i][squareColumn + j] === 1)) {
+      const row = newPosition + i;
+      const col = newSquareColumn + j;
+
+      // Check if it's out of bounds or colliding with landed blocks
+      if (
+        row >= BOARD_HEIGHT || 
+        col < 0 || 
+        col >= BOARD_WIDTH || 
+        (row < BOARD_HEIGHT && board[row][col] === 1)
+      ) {
         return true; // Collision detected
       }
     }
@@ -39,17 +45,17 @@ window.initGame = (React) => {
 const handleKeyDown = (event) => {
   const actions = {
     ArrowLeft: () => {
-      if (squareColumn > 0) {
+      if (squareColumn > 0 && !checkCollision(currentPosition, squareColumn - 1)) {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
     },
     ArrowRight: () => {
-      if (squareColumn < BOARD_WIDTH - 2) {
+      if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition, squareColumn + 1)) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
       }
     },
     ArrowDown: () => {
-      if (!checkCollision(currentPosition + 1)) {
+      if (!checkCollision(currentPosition + 1, squareColumn)) {
         setCurrentPosition(prev => prev + 1); // Move down if no collision
       }
     }
