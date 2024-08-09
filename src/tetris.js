@@ -23,32 +23,35 @@ window.initGame = (React) => {
     };
 
     const checkCollision = (newPosition) => {
-      // Check if the square can move down
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          if (newPosition + i >= BOARD_HEIGHT || board[newPosition + i][squareColumn + j] === 1) {
-            return true; // Collision detected
-          }
-        }
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      if (newPosition + i >= BOARD_HEIGHT || 
+          squareColumn + j < 0 || 
+          squareColumn + j >= BOARD_WIDTH || 
+          (newPosition + i < BOARD_HEIGHT && board[newPosition + i][squareColumn + j] === 1)) {
+        return true; // Collision detected
       }
-      return false; // No collision
-    };
+    }
+  }
+  return false; // No collision
+};
 
 const handleKeyDown = (event) => {
   switch (event.key) {
     case "ArrowLeft":
-      if (squareColumn > 0) {
+      if (squareColumn > 0 && !checkCollision(currentPosition)) {
         setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
       }
       break;
     case "ArrowRight":
-      if (squareColumn < BOARD_WIDTH - 2) {
+      if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition)) {
         setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
       }
       break;
     case "ArrowDown":
-      if (!checkCollision(currentPosition + 1)) {
-        setCurrentPosition(prev => prev + 1); // Move down if no collision
+      const newPosition = currentPosition + 1;
+      if (!checkCollision(newPosition)) {
+        setCurrentPosition(newPosition); // Move down if no collision
       }
       break;
     default:
