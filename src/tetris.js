@@ -98,11 +98,14 @@ const handleKeyDown = (event) => {
         setSquareColumn(prev => Math.max(0, prev - 1));
       }
       break;
-    case "ArrowRight": // Fixed this line
-      if (!checkCollision(currentPosition, squareColumn + 1)) {
-        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
-      }
-      break;
+    case "ArrowRight":
+  if (!checkCollision(currentPosition, squareColumn + 1)) {
+    // Check if moving right is within bounds
+    if (squareColumn + 1 + currentTetromino.shape[0].length <= BOARD_WIDTH) {
+      setSquareColumn(prev => prev + 1);
+    }
+  }
+  break;
     case "ArrowDown":
       if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
         setCurrentPosition(prev => prev + 1);
