@@ -71,29 +71,45 @@ window.initGame = (React) => {
       return false; // No collision
     };
 
-    const handleKeyDown = (event) => {
-      event.preventDefault();
-      if (gameOver) return;
-      switch (event.key) {
-        case "ArrowLeft":
-          if (squareColumn > 0 && !checkCollision(currentPosition, squareColumn - 1)) {
-            setSquareColumn(prev => Math.max(0, prev - 1));
-          }
-          break;
-        case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - currentTetromino.shape[0].length && !checkCollision(currentPosition, squareColumn + 1)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
-          }
-          break;
-        case "ArrowDown":
-          if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-            setCurrentPosition(prev => prev + 1);
-          }
-          break;
-        default:
-          break;
+    const rotateTetromino = () => {
+  const newShape = currentTetromino.shape[0].map((_, index) =>
+    currentTetromino.shape.map(row => row[index]).reverse()
+  );
+  const newTetromino = { ...currentTetromino, shape: newShape };
+
+  // Check for collisions after rotation
+  if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+    setCurrentTetromino(newTetromino);
+  }
+};
+
+const handleKeyDown = (event) => {
+  event.preventDefault();
+  if (gameOver) return;
+
+  switch (event.key) {
+    case "ArrowLeft":
+      if (squareColumn > 0 && !checkCollision(currentPosition, squareColumn - 1)) {
+        setSquareColumn(prev => Math.max(0, prev - 1));
       }
-    };
+      break;
+    case "ArrowRight":
+      if (squareColumn < BOARD_WIDTH - currentTetromino.shape[0].length && !checkCollision(currentPosition, squareColumn + 1)) {
+        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+      }
+      break;
+    case "ArrowDown":
+      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+        setCurrentPosition(prev => prev + 1);
+      }
+      break;
+    case "ArrowUp": // Add this case for rotation
+      rotateTetromino();
+      break;
+    default:
+      break;
+  }
+};
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
