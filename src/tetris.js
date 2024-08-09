@@ -1,6 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
-  
+
   const TETROMINOS = [
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
     { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
