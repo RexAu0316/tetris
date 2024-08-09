@@ -9,6 +9,7 @@ window.initGame = (React) => {
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [hasLanded, setHasLanded] = useState(false); // Track if the piece has landed
     const [gameOver, setGameOver] = useState(false); // Track game over state
+    const [score, setScore] = useState(0); // Track player score
 
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
@@ -23,14 +24,16 @@ window.initGame = (React) => {
 
     const resetGame = () => {
       setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
+      setScore(0); // Reset score
       setGameOver(false); // Reset game over state
       dropNewSquare(); // Start a new game
     };
 
     const clearFullRows = (newBoard) => {
-      const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
-      const filledRows = BOARD_HEIGHT - filteredBoard.length; // Count the filled rows
+      const filledRows = newBoard.filter(row => row.every(cell => cell === 1)).length; // Count filled rows
+      const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0)); // Keep rows that have empty cells
       const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
+      setScore(prev => prev + filledRows * 10); // Update score
       return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
 
@@ -104,6 +107,7 @@ window.initGame = (React) => {
       'div',
       { className: "tetris" },
       React.createElement('h2', null, "Simple Tetris"),
+      React.createElement('h3', null, `Score: ${score}`), // Display the score
       !gameOver ? (
         React.createElement(
           'div',
