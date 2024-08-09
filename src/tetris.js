@@ -71,18 +71,19 @@ const rotateTetromino = () => {
   const newShape = currentTetromino.shape[0].map((_, index) =>
     currentTetromino.shape.map(row => row[index]).reverse()
   );
+
   const newTetromino = { ...currentTetromino, shape: newShape };
 
-  // Check for collision with new position
+  // Check for collision with the new shape
   if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
     setCurrentTetromino(newTetromino);
   } else {
-    // Attempt to shift left or right if collision occurs
+    // If rotation fails, you can try to shift left/right to see if it fits
     if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
-      setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
+      setSquareColumn(prev => Math.max(0, prev - 1));
       setCurrentTetromino(newTetromino);
     } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
-      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1)); // Move right
+      setSquareColumn(prev => Math.min(BOARD_WIDTH - newTetromino.shape[0].length, prev + 1));
       setCurrentTetromino(newTetromino);
     }
   }
