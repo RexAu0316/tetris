@@ -1,5 +1,6 @@
 window.initGame = (React) => {
   const { useState, useEffect } = React;
+  
   const TETROMINOS = [
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // Square
     { shape: [[0, 1, 0], [1, 1, 1]], color: 'purple' }, // T-shape
@@ -14,7 +15,7 @@ window.initGame = (React) => {
     const FALL_INTERVAL = 500; // milliseconds
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
-    const [currentTetromino, setCurrentTetromino] = useState(TETROMINOS[0]);
+    const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino());
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
@@ -23,6 +24,7 @@ window.initGame = (React) => {
       setSquareColumn(4);
       setCurrentPosition(0);
       setCurrentTetromino(getRandomTetromino());
+
       if (checkCollision(0, 4)) {
         setGameOver(true);
       }
@@ -53,10 +55,10 @@ window.initGame = (React) => {
         for (let j = 0; j < tetromino.shape[i].length; j++) {
           if (
             tetromino.shape[i][j] &&
-            (newPosition + i >= BOARD_HEIGHT || // Checks if out of bounds vertically
-            column + j < 0 ||
-            column + j >= BOARD_WIDTH ||
-            board[newPosition + i][column + j] === 1)
+            (newPosition + i >= BOARD_HEIGHT || // Out of bounds vertically
+            column + j < 0 || 
+            column + j >= BOARD_WIDTH || 
+            board[newPosition + i][column + j] === 1) // Collision with existing blocks
           ) {
             return true; // Collision detected
           }
@@ -94,25 +96,23 @@ window.initGame = (React) => {
     };
 
     const rotateTetromino = () => {
-    const newShape = currentTetromino.shape[0].map((_, index) =>
-        currentTetromino.shape.map(row => row[index]).reverse()
-    );
+      const newShape = currentTetromino.shape[0].map((_, index) =>
+          currentTetromino.shape.map(row => row[index]).reverse()
+      );
 
-    // Create a tentative new tetromino
-    const newTetromino = { ...currentTetromino, shape: newShape };
+      const newTetromino = { ...currentTetromino, shape: newShape };
 
-    console.log('Before Rotation:', currentTetromino);
-    console.log('Attempting to rotate to:', newTetromino);
-
-    // Check collision after rotation
-    if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
-        setCurrentTetromino(newTetromino);
-        console.log('Rotation successful. New Tetromino:', newTetromino);
-    } else {
-        // If rotation fails, return it to original
-        console.log('Rotation failed, Tetromino unchanged.');
-    }
-};
+      if (!checkCollision(currentPosition, squareColumn, newTetromino)) {
+          setCurrentTetromino(newTetromino);
+      } else {
+          // Adjust position if rotation fails
+          if (!checkCollision(currentPosition, squareColumn - 1, newTetromino)) {
+              setSquareColumn(prev => prev - 1); // Shift left
+          } else if (!checkCollision(currentPosition, squareColumn + 1, newTetromino)) {
+              setSquareColumn(prev => prev + 1); // Shift right
+          }
+      }
+    };
 
     useEffect(() => {
       const handleInterval = setInterval(() => {
@@ -132,7 +132,7 @@ window.initGame = (React) => {
         }
       }, FALL_INTERVAL);
       return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board, currentTetromino, gameOver]);
+    }, [currentPosition, squareColumn, currentTetromino, gameOver]);
 
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
@@ -178,6 +178,7 @@ window.initGame = (React) => {
       )
     );
   };
+
   return Tetris;
 };
 
