@@ -12,6 +12,13 @@ const Tetris = () => {
   const BOARD_HEIGHT = 20;
   const BOARD_WIDTH = 10;
   const FALL_INTERVAL = 500; // milliseconds
+
+  // Move this up
+  const getRandomTetromino = () => {
+    const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
+    return TETROMINOS[randomIndex];
+  };
+
   const [currentPosition, setCurrentPosition] = useState(0);
   const [squareColumn, setSquareColumn] = useState(4);
   const [currentTetromino, setCurrentTetromino] = useState(getRandomTetromino());
