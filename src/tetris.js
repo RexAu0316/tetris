@@ -7,21 +7,25 @@ window.initGame = (React) => {
     const [currentPosition, setCurrentPosition] = useState(0);
     const [squareColumn, setSquareColumn] = useState(4);
     const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
+    
     const dropNewSquare = () => {
       setSquareColumn(4); // Reset to middle
       setCurrentPosition(0); // Start from the top
     };
+
     const clearFullRows = (newBoard) => {
       const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
       const filledRows = BOARD_HEIGHT - filteredBoard.length; // Count the filled rows
       const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
       return [...emptyRows, ...filteredBoard]; // Add empty rows at the top
     };
+
     const checkCollision = (newPosition) => {
       // Check if the square can move down
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
-          if (newPosition + i >= BOARD_HEIGHT || board[newPosition + i][squareColumn + j] === 1) {
+          // Check for bottom boundary and existing blocks
+          if (newPosition + i >= BOARD_HEIGHT || squareColumn + j < 0 || squareColumn + j >= BOARD_WIDTH || board[newPosition + i][squareColumn + j] === 1) {
             return true; // Collision detected
           }
         }
@@ -32,12 +36,12 @@ window.initGame = (React) => {
     const handleKeyDown = (event) => {
       switch (event.key) {
         case "ArrowLeft":
-          if (squareColumn > 0) {
+          if (squareColumn > 0 && !checkCollision(currentPosition)) {
             setSquareColumn(prev => Math.max(0, prev - 1)); // Move left
           }
           break;
         case "ArrowRight":
-          if (squareColumn < BOARD_WIDTH - 2) {
+          if (squareColumn < BOARD_WIDTH - 2 && !checkCollision(currentPosition)) {
             setSquareColumn(prev => Math.min(BOARD_WIDTH - 2, prev + 1)); // Move right
           }
           break;
@@ -82,12 +86,14 @@ window.initGame = (React) => {
       }, FALL_INTERVAL);
       return () => clearInterval(handleInterval);
     }, [currentPosition, squareColumn, board]);
+
     useEffect(() => {
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, []);
+
     return React.createElement(
       'div',
       { className: "tetris" },
