@@ -18,8 +18,6 @@ window.initGame = (React) => {
       // Check for game over condition
       if (checkCollision(0)) {
         setGameOver(true); // Set game over state
-        alert("Game Over"); // Alert the user
-        resetGame(); // Optionally reset the game after alert
       }
     };
 
@@ -106,28 +104,32 @@ window.initGame = (React) => {
       'div',
       { className: "tetris" },
       React.createElement('h2', null, "Simple Tetris"),
-      React.createElement(
-        'div',
-        { className: "game-board" },
-        board.map((row, rowIndex) => {
-          return React.createElement(
-            'div',
-            { key: rowIndex, className: "row" },
-            row.map((cell, colIndex) => {
-              const isActive = cell === 1 || 
-                (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
-                (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1));
-              return React.createElement(
-                'div',
-                {
-                  key: colIndex,
-                  className: `cell ${isActive ? 'active' : ''}`,
-                },
-                ''
-              );
-            })
-          );
-        })
+      !gameOver ? (
+        React.createElement(
+          'div',
+          { className: "game-board" },
+          board.map((row, rowIndex) => {
+            return React.createElement(
+              'div',
+              { key: rowIndex, className: "row" },
+              row.map((cell, colIndex) => {
+                const isActive = cell === 1 || 
+                  (rowIndex === currentPosition && (colIndex === squareColumn || colIndex === squareColumn + 1)) ||
+                  (rowIndex === currentPosition + 1 && (colIndex === squareColumn || colIndex === squareColumn + 1));
+                return React.createElement(
+                  'div',
+                  {
+                    key: colIndex,
+                    className: `cell ${isActive ? 'active' : ''}`,
+                  },
+                  ''
+                );
+              })
+            );
+          })
+        )
+      ) : (
+        React.createElement('button', { onClick: resetGame }, "Restart Game") // Restart button
       )
     );
   };
