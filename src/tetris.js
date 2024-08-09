@@ -11,150 +11,164 @@ window.initGame = (React) => {
   ];
 
   const Tetris = () => {
-    const BOARD_HEIGHT = 20;
-    const BOARD_WIDTH = 10;
-    const FALL_INTERVAL = 500; // milliseconds
-    const [currentPosition, setCurrentPosition] = useState(0);
-    const [squareColumn, setSquareColumn] = useState(4);
-    const [currentTetromino, setCurrentTetromino] = useState(TETROMINOS[0]); // Start with the first Tetromino
-    const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
-    const [hasLanded, setHasLanded] = useState(false);
-    const [gameOver, setGameOver] = useState(false);
-    const [score, setScore] = useState(0);
+  const BOARD_HEIGHT = 20;
+  const BOARD_WIDTH = 10;
+  const FALL_INTERVAL = 500; // milliseconds
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [squareColumn, setSquareColumn] = useState(4);
+  const [currentTetromino, setCurrentTetromino] = useState(TETROMINOS[0]); // Start with the first Tetromino
+  const [board, setBoard] = useState(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
+  const [hasLanded, setHasLanded] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
 
-    const dropNewSquare = () => {
-      setSquareColumn(4); // Reset to middle
-      setCurrentPosition(0); // Start from the top
-      setHasLanded(false);
-      setCurrentTetromino(getRandomTetromino()); // Set a new random Tetromino
+  const dropNewSquare = () => {
+    setSquareColumn(4); // Reset to middle
+    setCurrentPosition(0); // Start from the top
+    setHasLanded(false);
+    setCurrentTetromino(getRandomTetromino()); // Set a new random Tetromino
 
-      // Check for game over condition
-      if (checkCollision(0, 4)) {
-        setGameOver(true);
-      }
-    };
-
-    const resetGame = () => {
-      setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
-      setScore(0);
-      setGameOver(false);
-      dropNewSquare();
-    };
-
-    const getRandomTetromino = () => {
-      const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-      return TETROMINOS[randomIndex];
-    };
-
-    const clearFullRows = (newBoard) => {
-      const filledRows = newBoard.filter(row => row.every(cell => cell === 1)).length;
-      const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
-      const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
-      setScore(prev => prev + filledRows * 10);
-      return [...emptyRows, ...filteredBoard];
-    };
-
-    const checkBorders = (column, tetrominoWidth) => {
-  // Check for left border
-  if (column < 0) return true;
-  // Check for right border
-  if (column + tetrominoWidth > BOARD_WIDTH) return true;
-  return false;
-};
-
-// In handleKeyDown
-const handleKeyDown = (event) => {
-  event.preventDefault();
-  if (gameOver) return;
-  switch (event.key) {
-    case "ArrowLeft":
-      if (!checkBorders(squareColumn - 1, currentTetromino.shape[0].length) && 
-          !checkCollision(currentPosition, squareColumn - 1)) {
-        setSquareColumn(prev => Math.max(0, prev - 1));
-      }
-      break;
-    case "ArrowRight":
-      if (!checkBorders(squareColumn + 1, currentTetromino.shape[0].length) && 
-          !checkCollision(currentPosition, squareColumn + 1)) {
-        setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
-      }
-      break;
-    case "ArrowDown":
-      if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && 
-          !checkCollision(currentPosition + 1, squareColumn)) {
-        setCurrentPosition(prev => prev + 1);
-      }
-      break;
-    default:
-      break;
-  }
-};
-
-    useEffect(() => {
-      const handleInterval = setInterval(() => {
-        if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
-          setCurrentPosition(prev => prev + 1);
-        } else {
-          const newBoard = [...board];
-          currentTetromino.shape.forEach((row, i) => {
-            row.forEach((cell, j) => {
-              if (cell) {
-                newBoard[currentPosition + i][squareColumn + j] = 1; // Mark cells as landed
-              }
-            });
-          });
-          setBoard(clearFullRows(newBoard));
-          setHasLanded(true);
-          dropNewSquare();
-        }
-      }, FALL_INTERVAL);
-      return () => clearInterval(handleInterval);
-    }, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
-
-    useEffect(() => {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }, [gameOver]); // Add gameOver as a dependency
-
-    return React.createElement(
-  'div',
-  { className: "tetris", tabIndex: 0, onFocus: () => dropNewSquare() },
-  React.createElement('h2', null, "Simple Tetris"),
-  React.createElement('h3', null, `Score: ${score}`),
-  !gameOver ? (
-    React.createElement(
-      'div',
-      { className: "game-board" },
-      board.map((row, rowIndex) => {
-        return React.createElement(
-          'div',
-          { key: rowIndex, className: "row" },
-          row.map((cell, colIndex) => {
-            const isActive = currentTetromino.shape.some((row, i) => row.some((cell, j) => cell && rowIndex === currentPosition + i && colIndex === squareColumn + j));
-            const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined); // Gray for landed pieces
-            return React.createElement(
-              'div',
-              {
-                key: colIndex,
-                className: `cell ${isActive ? 'active' : ''}`,
-                style: { backgroundColor: backgroundColor },
-              },
-              ''
-            );
-          })
-        );
-      })
-    )
-  ) : (
-    React.createElement('div', null,
-      React.createElement('h3', null, "Game Over!"),
-      React.createElement('button', { onClick: resetGame }, "Restart Game")
-    )
-  )
-);
+    // Check for game over condition
+    if (checkCollision(0, 4)) {
+      setGameOver(true);
+    }
   };
+
+  const resetGame = () => {
+    setBoard(Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0)));
+    setScore(0);
+    setGameOver(false);
+    dropNewSquare();
+  };
+
+  const getRandomTetromino = () => {
+    const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
+    return TETROMINOS[randomIndex];
+  };
+
+  const clearFullRows = (newBoard) => {
+    const filledRows = newBoard.filter(row => row.every(cell => cell === 1)).length;
+    const filteredBoard = newBoard.filter(row => row.some(cell => cell === 0));
+    const emptyRows = Array.from({ length: filledRows }, () => Array(BOARD_WIDTH).fill(0));
+    setScore(prev => prev + filledRows * 10);
+    return [...emptyRows, ...filteredBoard];
+  };
+
+  const checkBorders = (column) => {
+    // Check for left border
+    if (column < 0) return true;
+    // Check for right border
+    if (column >= BOARD_WIDTH - currentTetromino.shape[0].length) return true;
+    return false;
+  };
+
+  const checkCollision = (nextPosition, nextColumn) => {
+    for (let i = 0; i < currentTetromino.shape.length; i++) {
+      for (let j = 0; j < currentTetromino.shape[i].length; j++) {
+        if (currentTetromino.shape[i][j]) {
+          const newRow = nextPosition + i;
+          const newCol = nextColumn + j;
+          if (newCol < 0 || newCol >= BOARD_WIDTH || newRow >= BOARD_HEIGHT) {
+            return true; // Collision detected
+          }
+          if (newRow >= 0 && board[newRow][newCol] === 1) {
+            return true; // Collision detected
+          }
+        }
+      }
+    }
+    return false; // No collision
+  };
+
+  const handleKeyDown = (event) => {
+    event.preventDefault();
+    if (gameOver) return;
+    switch (event.key) {
+      case "ArrowLeft":
+        if (!checkBorders(squareColumn - 1) && !checkCollision(currentPosition, squareColumn - 1)) {
+          setSquareColumn(prev => Math.max(0, prev - 1));
+        }
+        break;
+      case "ArrowRight":
+        if (!checkBorders(squareColumn + 1) && !checkCollision(currentPosition, squareColumn + 1)) {
+          setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+        }
+        break;
+      case "ArrowDown":
+        if (currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+          setCurrentPosition(prev => prev + 1);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    const handleInterval = setInterval(() => {
+      if (!hasLanded && currentPosition < BOARD_HEIGHT - currentTetromino.shape.length && !checkCollision(currentPosition + 1, squareColumn)) {
+        setCurrentPosition(prev => prev + 1);
+      } else {
+        const newBoard = [...board];
+        currentTetromino.shape.forEach((row, i) => {
+          row.forEach((cell, j) => {
+            if (cell) {
+              newBoard[currentPosition + i][squareColumn + j] = 1; // Mark cells as landed
+            }
+          });
+        });
+        setBoard(clearFullRows(newBoard));
+        setHasLanded(true);
+        dropNewSquare();
+      }
+    }, FALL_INTERVAL);
+    return () => clearInterval(handleInterval);
+  }, [currentPosition, squareColumn, board, hasLanded, currentTetromino]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [gameOver]); // Add gameOver as a dependency
+
+  return React.createElement(
+    'div',
+    { className: "tetris", tabIndex: 0, onFocus: () => dropNewSquare() },
+    React.createElement('h2', null, "Simple Tetris"),
+    React.createElement('h3', null, `Score: ${score}`),
+    !gameOver ? (
+      React.createElement(
+        'div',
+        { className: "game-board" },
+        board.map((row, rowIndex) => {
+          return React.createElement(
+            'div',
+            { key: rowIndex, className: "row" },
+            row.map((cell, colIndex) => {
+              const isActive = currentTetromino.shape.some((row, i) => row.some((cell, j) => cell && rowIndex === currentPosition + i && colIndex === squareColumn + j));
+              const backgroundColor = isActive ? currentTetromino.color : (cell === 1 ? 'gray' : undefined); // Gray for landed pieces
+              return React.createElement(
+                'div',
+                {
+                  key: colIndex,
+                  className: `cell ${isActive ? 'active' : ''}`,
+                  style: { backgroundColor: backgroundColor },
+                },
+                ''
+              );
+            })
+          );
+        })
+      )
+    ) : (
+      React.createElement('div', null,
+        React.createElement('h3', null, "Game Over!"),
+        React.createElement('button', { onClick: resetGame }, "Restart Game")
+      )
+    )
+  );
+};
   return Tetris;
 };
 
