@@ -37,45 +37,36 @@ window.initGame = (React) => {
           }
           break;
         case "ArrowDown":
-          setCurrentPosition(prev => {
-            if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1; // Move down
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev;
-            }
-          });
+          moveDown();
           break;
         default:
           break;
       }
     };
 
+    const moveDown = () => {
+      setCurrentPosition(prev => {
+        if (prev < BOARD_HEIGHT - 2) {
+          return prev + 1; // Move down
+        } else {
+          // Square has landed
+          const newBoard = [...board];
+          newBoard[prev][squareColumn] = 1;
+          newBoard[prev][squareColumn + 1] = 1;
+          newBoard[prev + 1][squareColumn] = 1;
+          newBoard[prev + 1][squareColumn + 1] = 1;
+          setBoard(clearFullRows(newBoard));
+          dropNewSquare(); // Drop a new square
+          setIsFalling(false); // Stop falling
+          return prev; // Return the previous position
+        }
+      });
+    };
+
     useEffect(() => {
       const handleInterval = setInterval(() => {
         if (isFalling) {
-          setCurrentPosition(prev => {
-            if (prev < BOARD_HEIGHT - 2) {
-              return prev + 1; // Move down automatically
-            } else {
-              // Square has landed
-              const newBoard = [...board];
-              newBoard[prev][squareColumn] = 1;
-              newBoard[prev][squareColumn + 1] = 1;
-              newBoard[prev + 1][squareColumn] = 1;
-              newBoard[prev + 1][squareColumn + 1] = 1;
-              setBoard(clearFullRows(newBoard));
-              dropNewSquare(); // Drop a new square
-              return prev;
-            }
-          });
+          moveDown();
         }
       }, FALL_INTERVAL);
 
