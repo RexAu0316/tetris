@@ -74,7 +74,7 @@ window.initGame = (React) => {
           break;
         case "ArrowRight":
           if (!checkCollision(currentPosition, squareColumn + 1)) {
-            setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length, prev + 1));
+            setSquareColumn(prev => Math.min(BOARD_WIDTH - currentTetromino.shape[0].length + 1, prev + 1));
           }
           break;
         case "ArrowDown":
